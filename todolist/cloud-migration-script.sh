@@ -53,5 +53,7 @@ gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "source $VIRTUAL_ENV_DI
 
 gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "echo INSTALLING DEPENDENCIES"
 
+gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "export API_URL=\"http://localhost:80\""
+
 # Running todolist.py remotely
-gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "source $VIRTUAL_ENV_DIR/$VIRTUAL_ENV_NAME/bin/activate && sudo $VIRTUAL_ENV_DIR/$VIRTUAL_ENV_NAME/bin/python3 todolist.py"
+gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "source $VIRTUAL_ENV_DIR/$VIRTUAL_ENV_NAME/bin/activate && sudo $VIRTUAL_ENV_DIR/$VIRTUAL_ENV_NAME/bin/python3 todolist.py "
