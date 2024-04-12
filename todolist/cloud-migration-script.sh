@@ -42,6 +42,7 @@ gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "mkdir $TEMPLATES_FOLDE
 # Uploading index.html file to the templates folder
 gcloud compute scp ./templates/index.html $INSTANCE_NAME:./$TEMPLATES_FOLDER --zone $ZONE
 
+gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "echo INSTALLING DEPENDENCIES"
 # Installing dependencies
 gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "sudo apt-get update && sudo apt-get install -y ${DEPENDENCIES[*]}"
 
@@ -49,11 +50,10 @@ gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "sudo apt-get update &&
 gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "cd $VIRTUAL_ENV_DIR && python3 -m venv $VIRTUAL_ENV_NAME"
 
 # Activate virtual environment and install Flask
-gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "source $VIRTUAL_ENV_DIR/$VIRTUAL_ENV_NAME/bin/activate && pip install Flask"
-
-gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "echo INSTALLING DEPENDENCIES"
+gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "source $VIRTUAL_ENV_DIR/$VIRTUAL_ENV_NAME/bin/activate && pip install Flask requests"
 
 gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "export API_URL=\"http://localhost:80\""
 
 # Running todolist.py remotely
-gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "source $VIRTUAL_ENV_DIR/$VIRTUAL_ENV_NAME/bin/activate && sudo $VIRTUAL_ENV_DIR/$VIRTUAL_ENV_NAME/bin/python3 todolist.py "
+# gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "source $VIRTUAL_ENV_DIR/$VIRTUAL_ENV_NAME/bin/activate && sudo API_URL=\"http://example.com/api\" $VIRTUAL_ENV_DIR/$VIRTUAL_ENV_NAME/bin/python3 todolist.py"
+gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "source $VIRTUAL_ENV_DIR/$VIRTUAL_ENV_NAME/bin/activate && sudo API_URL=\"http://example.com/api\" $VIRTUAL_ENV_DIR/$VIRTUAL_ENV_NAME/bin/python3 todolist.py"

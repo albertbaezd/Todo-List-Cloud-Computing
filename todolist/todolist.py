@@ -1,8 +1,9 @@
 # This is a simple example web app that is meant to illustrate the basics.
-from flask import Flask, render_template, redirect, g, request, url_for
+from flask import Flask, render_template, redirect, g, request, url_for, jsonify
 import sqlite3
 import os
 import sys
+import requests
 
 DATABASE = 'todolist.db'
 
@@ -14,12 +15,12 @@ if not api_url:
 app = Flask(__name__)
 app.config.from_object(__name__)
 
-# New homework example
+# HW4
 @app.route("/")
 def show_list():
-      resp = requests.get(f"{api_url}/api/items")
-      resp = resp.json()
-      return render_template('index.html', todolist=resp)
+    resp = requests.get(f"{api_url}/api/items")
+    resp = resp.json()
+    return render_template('index.html', todolist=resp)
 
 @app.route("/api/items")
 def get_items():
@@ -71,4 +72,4 @@ def close_db(error):
 
 
 if __name__ == "__main__":
-    app.run("0.0.0.0", port=80)
+    app.run("0.0.0.0", port=80, debug=True)
