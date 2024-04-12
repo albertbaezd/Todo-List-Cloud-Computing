@@ -1,19 +1,33 @@
 # This is a simple example web app that is meant to illustrate the basics.
 from flask import Flask, render_template, redirect, g, request, url_for
 import sqlite3
+import os
+import sys
 
 DATABASE = 'todolist.db'
+
+api_url = os.environ.get("API_URL")
+if not api_url:
+    print("URL environment variable not set: API_URL")
+    sys.exit(1)
 
 app = Flask(__name__)
 app.config.from_object(__name__)
 
-
+# New homework example
 @app.route("/")
 def show_list():
-      resp = requests.get("http://localhost:5001/api/items")
+      resp = requests.get(f"{api_url}/api/items")
       resp = resp.json()
       return render_template('index.html', todolist=resp)
 
+@app.route("/api/items")
+def get_items():
+    db = get_db()
+    cur = db.execute('SELECT what_to_do, due_date, status FROM entries')
+    entries = cur.fetchall()
+    tdlist = [dict(what_to_do=row[0], due_date=row[1], status=row[2]) for row in entries]
+    return jsonify(tdlist)
 
 @app.route("/add", methods=['POST'])
 def add_entry():
