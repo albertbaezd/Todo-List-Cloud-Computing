@@ -7,17 +7,17 @@ import requests
 
 DATABASE = 'todolist.db'
 
-api_url = os.environ.get("API_URL")
-if not api_url:
-    print("URL environment variable not set: API_URL")
-    sys.exit(1)
-
 app = Flask(__name__)
 app.config.from_object(__name__)
 
 # HW4
 @app.route("/")
 def show_list():
+    api_url = os.environ.get("API_URL")
+    if not api_url:
+        print("URL environment variable not set: API_URL")
+        return 
+        
     resp = requests.get(f"{api_url}/api/items")
     resp = resp.json()
     return render_template('index.html', todolist=resp)
