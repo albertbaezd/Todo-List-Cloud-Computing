@@ -1,3 +1,4 @@
+#!/usr/local/bin/python
 # This is a simple example web app that is meant to illustrate the basics.
 from flask import Flask, render_template, redirect, g, request, url_for, jsonify
 import sqlite3
@@ -17,7 +18,7 @@ def show_list():
     if not api_url:
         print("URL environment variable not set: API_URL")
         return 
-    resp = requests.get(f"{api_url}/api/items")
+    resp = requests.get(f"http://{api_url}/api/items")
     resp = resp.json()
     return render_template('index.html', todolist=resp)
 
