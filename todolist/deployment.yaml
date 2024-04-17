@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todolist-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todolist
+  template:
+    metadata:
+      labels:
+        app: todolist
+    spec:
+      containers:
+      - name: my-container
+        image: djninjatv/todolist
+        ports:
+        - containerPort: 80
+        env:
+        - name: API_URL
+          value: "35.239.47.119"
+---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: todolist-service # Redundant
+# spec:
+#   type: LoadBalancer
+#   ports:
+#     - port: 80
+#       targetPort: 80
+#   selector:
+#     app: todolist
+apiVersion: v1
+kind: Service
+metadata:
+  name: todolist-service # Redundant
+spec:
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  selector:
+    app: todolist

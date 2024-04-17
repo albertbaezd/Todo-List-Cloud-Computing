@@ -17,7 +17,6 @@ def show_list():
     if not api_url:
         print("URL environment variable not set: API_URL")
         return 
-        
     resp = requests.get(f"{api_url}/api/items")
     resp = resp.json()
     return render_template('index.html', todolist=resp)
