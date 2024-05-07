@@ -8,7 +8,10 @@ import requests
 
 DATABASE = 'todolist.db'
 
-app = Flask(__name__)
+# app = Flask(__name__) default 
+# app = Flask(__name__, static_folder='/build', static_url_path='/')
+app = Flask(__name__, template_folder='build', static_folder='build', static_url_path='/')
+
 app.config.from_object(__name__)
 
 # HW4

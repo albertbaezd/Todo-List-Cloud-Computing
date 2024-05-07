@@ -36,6 +36,10 @@ for file in "${SOURCE_FILES[@]}"; do
     gcloud compute scp $file $INSTANCE_NAME:$DESTINATION_PATH --zone $ZONE
 done
 
+# Copying build folder from React
+
+gcloud compute scp --recurse build $INSTANCE_NAME:$DESTINATION_PATH --zone $ZONE
+
 # Creating templates folder
 gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "mkdir $TEMPLATES_FOLDER"
 
