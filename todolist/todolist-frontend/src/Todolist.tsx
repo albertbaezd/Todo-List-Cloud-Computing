@@ -2,6 +2,7 @@ import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import { Box, Button, Divider, MenuItem, Select, TextField, InputLabel } from '@mui/material';
+import axios from 'axios';
 import Navbar from "./components/Navbar.tsx"
 import TodoStrip from "./components/TodoStrip.tsx"
 import StatusBar from "./components/StatusBar.tsx"
@@ -16,9 +17,8 @@ type Todo = {
 }
 
 export default function TodolistContainer() {
-
-  const [activeFilter, setActiveFilter] = React.useState(false);
-  const [todos, setTodos] = React.useState<Todo[]>([
+  // Dummy JSON data
+  const dummyTodos: Todo[] = [
     {
       id: '1',
       description: 'First Todo',
@@ -39,27 +39,70 @@ export default function TodolistContainer() {
       id: '3',
       description: 'Third Todo',
       added_date: new Date(),
+      due_date: new Date('2024-06-15'),
+      status: false,
+      priority_id: 3
+    },
+    {
+      id: '4',
+      description: 'Compl 1 Todo',
+      added_date: new Date(),
+      due_date: new Date('2024-06-15'),
+      status: true,
+      priority_id: 2
+    },
+    {
+      id: '5',
+      description: 'Compl 2 Todo',
+      added_date: new Date(),
+      due_date: new Date('2024-06-15'),
+      status: true,
+      priority_id: 1
+    },
+    {
+      id: '6',
+      description: 'Compl 3 Todo',
+      added_date: new Date(),
       due_date: new Date('2024-08-22'),
       status: true,
       priority_id: 3
     }
-  ]);
+  ];
 
-  const handleSubmit = (event) => {
+  // Initialize states with dummy data
+  const [pendingTodos, setPendingTodos] = React.useState<Todo[]>(dummyTodos.filter(todo => todo.status === false));
+  const [completedTodos, setCompletedTodos] = React.useState<Todo[]>(dummyTodos.filter(todo => todo.status === true));
+  const [activeFilter, setActiveFilter] = React.useState(false);
+
+  React.useEffect(() => {
+    const fetchTodos = async () => {
+      try {
+        // Replace this IP address with your actual URL later
+        const response = await axios.get('http://your-ip-address-here/api/todos');
+        const todos: Todo[] = response.data;
+
+        // Separate pending and completed todos
+        const pending = todos.filter((todo) => !todo.status);
+        const completed = todos.filter((todo) => todo.status);
+
+        setPendingTodos(pending);
+        setCompletedTodos(completed);
+      } catch (error) {
+        console.error('Error fetching todos:', error);
+        // Fallback to dummy JSON data (already set in state)
+      }
+    };
+
+    fetchTodos(); // Call the async function inside `useEffect`
+  }, []); // Empty dependency array ensures this runs once when the component mounts
+
+  const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     // Handle form submission logic here
   };
 
-  const handleFilterChange = (filter) => {
+  const handleFilterChange = (filter: boolean) => {
     setActiveFilter(filter);
-  };
-
-  const handleTodosChange = (id: string, newValues: Partial<Todo>) => {
-    setTodos((prevTodos) =>
-      prevTodos.map((todo) =>
-        todo.id === id ? { ...todo, ...newValues } : todo
-      )
-    );
   };
 
   return (
@@ -94,19 +137,9 @@ export default function TodolistContainer() {
               id="date"
               label="Date"
               type="date"
-              InputLabelProps={{
-                shrink: true,
-              }}
-              // InputProps={{
-              //   endAdornment: (
-              //     <InputAdornment position="end">
-              //       <CalendarToday />
-              //     </InputAdornment>
-              //   ),
-              // }}
+              InputLabelProps={{ shrink: true }}
               sx={{ mb: 2 }}
             />
-            {/* Priority */}
             <InputLabel htmlFor="priority" sx={{ mt: 2, mb: 1 }}>Priority</InputLabel>
             <Select
               label="Priority"
@@ -122,11 +155,8 @@ export default function TodolistContainer() {
             <Button type="submit" variant="contained" color="primary" sx={{ mb: 2 }}>
               Add
             </Button>
-            {/* Divider */}
             <Divider orientation="vertical" flexItem sx={{ marginY: "20px", bgcolor: '#a0a3a6', height: "5px" }} />
-            {/*Filters Box */}
             <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
-              {/* Filter select */}
               <Box sx={{ width: '50%', paddingRight: '8px' }}>
                 <Box sx={{ mb: 2 }}>
                   <InputLabel htmlFor="filter" sx={{ mt: 2, mb: 1 }}>Filter</InputLabel>
@@ -142,7 +172,6 @@ export default function TodolistContainer() {
                   </Select>
                 </Box>
               </Box>
-              {/* Sort select */}
               <Box sx={{ width: '50%', paddingLeft: '8px' }}>
                 <Box sx={{ mb: 2 }}>
                   <InputLabel htmlFor="sort" sx={{ mt: 2, mb: 1 }}>Sort</InputLabel>
@@ -159,18 +188,18 @@ export default function TodolistContainer() {
                 </Box>
               </Box>
             </Box>
-            
           </Box>
-          {/* TodoStrip Cards container */}
-          <Box sx={{backgroundColor:"white", 
-              marginTop:"30px", 
-              borderRadius:'10px',
+          <Box sx={{
+              backgroundColor: "white",
+              marginTop: "30px",
+              borderRadius: '10px',
               boxShadow: '2px 5px 20px #696363',
               height: 'auto',
               display: 'flex',
-              flexDirection: 'column'}}>
+              flexDirection: 'column'
+            }}>
             <StatusBar activeFilter={activeFilter} onFilterChange={handleFilterChange} />
-            {todos.map((todo) => (
+            {(activeFilter ? completedTodos : pendingTodos).map((todo) => (
               <TodoStrip
                 key={todo.id}
                 description={todo.description}
@@ -180,8 +209,7 @@ export default function TodolistContainer() {
                 dueDate={todo.due_date.toISOString().split('T')[0]}
               />
             ))}
-          </Box>  
-
+          </Box>
         </Box>
       </Container>
     </React.Fragment>
