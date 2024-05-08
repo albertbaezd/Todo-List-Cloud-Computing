@@ -1,17 +1,18 @@
 import * as React from 'react';
-import { Box, Button, Chip, Typography, TextField, IconButton } from '@mui/material';
+import { Box, Chip, Typography, TextField, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 
-
-const TodoStrip = ({ description, priority, editable, onDelete, onEdit }) => {
-  const [editMode, setEditMode] = React.useState(editable || false);
+const TodoStrip = ({ description, priority, onDelete, onEdit }) => {
+  const [editMode, setEditMode] = React.useState(false);
   const [newDescription, setNewDescription] = React.useState(description);
 
   const handleEdit = () => {
+    // Toggle edit mode
     setEditMode(!editMode);
-    if (editMode) {
+    // If exiting edit mode, save the changes
+    if (!editMode) {
       onEdit(newDescription);
     }
   };
@@ -42,26 +43,18 @@ const TodoStrip = ({ description, priority, editable, onDelete, onEdit }) => {
         </Typography>
       )}
       <Chip label={priority} variant="outlined" sx={{ mx: 1 }} />
-      {editable ? (
-        <>
-          <IconButton onClick={handleEdit} sx={{ mx: 1 }}>
-            <SaveIcon color='info'/>
-          </IconButton>
-          
-          <IconButton onClick={onDelete} sx={{ mx: 1 }}>
-            <DeleteIcon color='error'/>
-          </IconButton>
-         
-        </>
-      ) :  <>
-            <IconButton disabled sx={{ mx: 1 }}>
-                <EditIcon />
-            </IconButton>
-            
-            <IconButton disabled sx={{ mx: 1 }}>
-                <DeleteIcon />
-            </IconButton>
-        </>}
+      <IconButton onClick={handleEdit} sx={{ mx: 1 }}>
+        {editMode ? (
+          <SaveIcon color='info'/>
+        ) : (
+          <EditIcon />
+        )}
+      </IconButton>
+      {editMode && (
+        <IconButton onClick={onDelete} sx={{ mx: 1 }}>
+          <DeleteIcon />
+        </IconButton>
+      )}
     </Box>
   );
 };

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
-import { Box, Button, Divider, MenuItem, Select, TextField, InputAdornment, InputLabel, formLabelClasses } from '@mui/material';
+import { Box, Button, Divider, MenuItem, Select, TextField, InputAdornment, InputLabel, formLabelClasses, Typography } from '@mui/material';
 import { CalendarToday } from '@mui/icons-material';
 import Navbar from "./components/Navbar.tsx"
 import TodoStrip from "./components/TodoStrip.tsx"
@@ -48,13 +48,13 @@ export default function TodolistContainer() {
               InputLabelProps={{
                 shrink: true,
               }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <CalendarToday />
-                  </InputAdornment>
-                ),
-              }}
+              // InputProps={{
+              //   endAdornment: (
+              //     <InputAdornment position="end">
+              //       <CalendarToday />
+              //     </InputAdornment>
+              //   ),
+              // }}
               sx={{ mb: 2 }}
             />
             {/* Priority */}
@@ -75,6 +75,7 @@ export default function TodolistContainer() {
             </Button>
             {/* Divider */}
             <Divider orientation="vertical" flexItem sx={{ marginY: "20px", bgcolor: '#a0a3a6', height: "5px" }} />
+            {/*Filters Box */}
             <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
               {/* Filter select */}
               <Box sx={{ width: '50%', paddingRight: '8px' }}>
@@ -110,6 +111,7 @@ export default function TodolistContainer() {
                 </Box>
               </Box>
             </Box>
+            
           </Box>
           {/* TodoStrip Cards container */}
           <Box sx={{backgroundColor:"white", 
@@ -119,9 +121,12 @@ export default function TodolistContainer() {
               height: 'auto',
               display: 'flex',
               flexDirection: 'column'}}>
-            <TodoStrip description={"description descriptiondescriptiondescriptiondescriptiondescription"} priority={"priority"} onDelete={()=>{}} onEdit={()=>{}} editable={true}/>
-            <TodoStrip description={"description descriptiondescriptiondescriptiondescriptiondescription"} priority={"priority"} onDelete={()=>{}} onEdit={()=>{}} editable={false}/>
-            <TodoStrip description={"description descriptiondescriptiondescriptiondescriptiondescription"} priority={"priority"} onDelete={()=>{}} onEdit={()=>{}} editable={false}/>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              Todo
+            </Typography>
+            <TodoStrip description={"description descriptiondescriptiondescriptiondescriptiondescription"} priority={"priority"} onDelete={()=>{}} onEdit={()=>{}}/>
+            <TodoStrip description={"description descriptiondescriptiondescriptiondescriptiondescription"} priority={"priority"} onDelete={()=>{}} onEdit={()=>{}}/>
+            <TodoStrip description={"description descriptiondescriptiondescriptiondescriptiondescription"} priority={"priority"} onDelete={()=>{}} onEdit={()=>{}}/>
           </Box>  
 
         </Box>
