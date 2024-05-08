@@ -224,7 +224,6 @@ def get_all_users():
     return jsonify(user_list)
 
 
-# User Login Endpoint
 @app.route('/api/login', methods=['POST'])
 def login_user():
     data = request.json
@@ -233,9 +232,12 @@ def login_user():
     db = get_db()
     cursor = db.execute('SELECT id, password FROM Users WHERE username = ?', (data['username'],))
     user = cursor.fetchone()
-    if not user or not bcrypt.check_password_hash(user['password'], data['password']):
+    # Ensure the user is not None and verify the password using the second element (index 1)
+    if not user or not bcrypt.check_password_hash(user[1], data['password']):
         return jsonify({"error": "Invalid username or password"}), 401
-    return jsonify({"message": "Login successful", "user_id": user['id']}), 200
+    # Access the user ID using the first element (index 0)
+    return jsonify({"message": "Login successful", "user_id": user[0]}), 200
+
 
 # Old Methods
 # @app.route("/add", methods=['POST'])
