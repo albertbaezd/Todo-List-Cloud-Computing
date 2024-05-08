@@ -5,14 +5,22 @@ import sqlite3
 import os
 import sys
 import requests
+from flask_bcrypt import Bcrypt
+import re
 
 DATABASE = 'todolist.db'
+# Regular expression pattern to validate an email address
+email_pattern = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+
 
 # app = Flask(__name__) default 
 # app = Flask(__name__, static_folder='/build', static_url_path='/')
 app = Flask(__name__, template_folder='build', static_folder='build', static_url_path='/')
 
 app.config.from_object(__name__)
+
+# Encription
+bcrypt = Bcrypt(app)
 
 # HW4
 @app.route("/")
@@ -162,6 +170,72 @@ def update_todo_status(todo_id):
         db.commit()
         return jsonify({"message": f"Todo status updated to {new_status}"})
     return jsonify({"error": "Todo not found"}), 404
+
+# User Registration Endpoint
+@app.route('/api/register', methods=['POST'])
+def register_user():
+    data = request.json
+
+    # Ensure all mandatory fields are present and non-empty
+    if not all(key in data and data[key] for key in ['username', 'password', 'email']):
+        return jsonify({"error": "Missing required fields: 'username', 'password', and/or 'email'"}), 400
+
+    # Validate email format
+    if not email_pattern.match(data['email']):
+        return jsonify({"error": "Invalid email format"}), 400
+
+    # Validate password length (at least 8 characters)
+    if len(data['password']) < 8:
+        return jsonify({"error": "Password must be at least 8 characters long"}), 400
+
+    # Check if the username already exists
+    db = get_db()
+    cursor = db.execute('SELECT id FROM Users WHERE username = ?', (data['username'],))
+    if cursor.fetchone():
+        return jsonify({"error": "Username already exists"}), 409
+
+    # Check if the email already exists
+    cursor = db.execute('SELECT id FROM Users WHERE email = ?', (data['email'],))
+    if cursor.fetchone():
+        return jsonify({"error": "Email already exists"}), 409
+
+    # Hash the password and insert the user
+    hashed_password = bcrypt.generate_password_hash(data['password']).decode('utf-8')
+    db.execute('INSERT INTO Users (username, password, email) VALUES (?, ?, ?)',
+               (data['username'], hashed_password, data['email']))
+    db.commit()
+    return jsonify({"message": "User created successfully"}), 201
+
+@app.route("/api/users", methods=['GET'])
+def get_all_users():
+    db = get_db()
+    cursor = db.execute('SELECT id, username, email FROM Users')
+    users = cursor.fetchall()
+    
+    # Retrieve column names from the cursor description
+    column_names = [description[0] for description in cursor.description]
+    
+    # Use a list comprehension to convert tuples to dictionaries
+    user_list = [
+        {column_names[i]: row[i] for i in range(len(row))}
+        for row in users
+    ]
+    
+    return jsonify(user_list)
+
+
+# User Login Endpoint
+@app.route('/api/login', methods=['POST'])
+def login_user():
+    data = request.json
+    if 'username' not in data or 'password' not in data:
+        return jsonify({"error": "Missing required fields: 'username' and/or 'password'"}), 400
+    db = get_db()
+    cursor = db.execute('SELECT id, password FROM Users WHERE username = ?', (data['username'],))
+    user = cursor.fetchone()
+    if not user or not bcrypt.check_password_hash(user['password'], data['password']):
+        return jsonify({"error": "Invalid username or password"}), 401
+    return jsonify({"message": "Login successful", "user_id": user['id']}), 200
 
 # Old Methods
 # @app.route("/add", methods=['POST'])
