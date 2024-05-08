@@ -5,12 +5,19 @@ import { Box, Button, Divider, MenuItem, Select, TextField, InputAdornment, Inpu
 import { CalendarToday } from '@mui/icons-material';
 import Navbar from "./components/Navbar.tsx"
 import TodoStrip from "./components/TodoStrip.tsx"
+import StatusBar from "./components/StatusBar.tsx"
 
 export default function TodolistContainer() {
+
+  const [activeFilter, setActiveFilter] = React.useState(false); // Declare activeFilter and initialize it to 0
 
   const handleSubmit = (event) => {
     event.preventDefault();
     // Handle form submission logic here
+  };
+
+  const handleFilterChange = (filter) => {
+    setActiveFilter(filter);
   };
 
   return (
@@ -121,9 +128,7 @@ export default function TodolistContainer() {
               height: 'auto',
               display: 'flex',
               flexDirection: 'column'}}>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Todo
-            </Typography>
+            <StatusBar activeFilter={activeFilter} onFilterChange={handleFilterChange}/>
             <TodoStrip description={"description descriptiondescriptiondescriptiondescriptiondescription"} priority={"priority"} onDelete={()=>{}} onEdit={()=>{}}/>
             <TodoStrip description={"description descriptiondescriptiondescriptiondescriptiondescription"} priority={"priority"} onDelete={()=>{}} onEdit={()=>{}}/>
             <TodoStrip description={"description descriptiondescriptiondescriptiondescriptiondescription"} priority={"priority"} onDelete={()=>{}} onEdit={()=>{}}/>

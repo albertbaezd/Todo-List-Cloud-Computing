@@ -35,7 +35,7 @@ const TodoStrip = ({ description, priority, onDelete, onEdit }) => {
           fullWidth
           autoFocus
           InputLabelProps={{ sx: { marginTop: '5px' } }}
-          sx={{ overflowY: 'auto' }}
+          sx={{ overflowY: 'auto', textAlign:"left" }}
         />
       ) : (
         <Typography variant="body1" sx={{ flexGrow: 1, overflowY: 'auto' }}>
