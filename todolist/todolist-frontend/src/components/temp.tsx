@@ -2,21 +2,20 @@ import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import { Box, Button, Divider, MenuItem, Select, TextField, InputLabel } from '@mui/material';
-import Navbar from "./components/Navbar.tsx"
-import TodoStrip from "./components/TodoStrip.tsx"
-import StatusBar from "./components/StatusBar.tsx"
+import Navbar from "./components/Navbar";
+import TodoStrip from "./components/TodoStrip";
+import StatusBar from "./components/StatusBar";
 
 type Todo = {
   id: string;
   description: string;
   added_date: Date;
   due_date: Date;
-  status: boolean; // `true` for completed, `false` for pending
+  status: boolean;
   priority_id: number;
 }
 
 export default function TodolistContainer() {
-
   const [activeFilter, setActiveFilter] = React.useState(false);
   const [todos, setTodos] = React.useState<Todo[]>([
     {
@@ -45,12 +44,12 @@ export default function TodolistContainer() {
     }
   ]);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     // Handle form submission logic here
   };
 
-  const handleFilterChange = (filter) => {
+  const handleFilterChange = (filter: boolean) => {
     setActiveFilter(filter);
   };
 
@@ -94,19 +93,9 @@ export default function TodolistContainer() {
               id="date"
               label="Date"
               type="date"
-              InputLabelProps={{
-                shrink: true,
-              }}
-              // InputProps={{
-              //   endAdornment: (
-              //     <InputAdornment position="end">
-              //       <CalendarToday />
-              //     </InputAdornment>
-              //   ),
-              // }}
+              InputLabelProps={{ shrink: true }}
               sx={{ mb: 2 }}
             />
-            {/* Priority */}
             <InputLabel htmlFor="priority" sx={{ mt: 2, mb: 1 }}>Priority</InputLabel>
             <Select
               label="Priority"
@@ -122,11 +111,8 @@ export default function TodolistContainer() {
             <Button type="submit" variant="contained" color="primary" sx={{ mb: 2 }}>
               Add
             </Button>
-            {/* Divider */}
             <Divider orientation="vertical" flexItem sx={{ marginY: "20px", bgcolor: '#a0a3a6', height: "5px" }} />
-            {/*Filters Box */}
             <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
-              {/* Filter select */}
               <Box sx={{ width: '50%', paddingRight: '8px' }}>
                 <Box sx={{ mb: 2 }}>
                   <InputLabel htmlFor="filter" sx={{ mt: 2, mb: 1 }}>Filter</InputLabel>
@@ -142,7 +128,6 @@ export default function TodolistContainer() {
                   </Select>
                 </Box>
               </Box>
-              {/* Sort select */}
               <Box sx={{ width: '50%', paddingLeft: '8px' }}>
                 <Box sx={{ mb: 2 }}>
                   <InputLabel htmlFor="sort" sx={{ mt: 2, mb: 1 }}>Sort</InputLabel>
@@ -159,16 +144,16 @@ export default function TodolistContainer() {
                 </Box>
               </Box>
             </Box>
-            
           </Box>
-          {/* TodoStrip Cards container */}
-          <Box sx={{backgroundColor:"white", 
-              marginTop:"30px", 
-              borderRadius:'10px',
+          <Box sx={{
+              backgroundColor: "white",
+              marginTop: "30px",
+              borderRadius: '10px',
               boxShadow: '2px 5px 20px #696363',
               height: 'auto',
               display: 'flex',
-              flexDirection: 'column'}}>
+              flexDirection: 'column'
+            }}>
             <StatusBar activeFilter={activeFilter} onFilterChange={handleFilterChange} />
             {todos.map((todo) => (
               <TodoStrip
@@ -180,8 +165,7 @@ export default function TodolistContainer() {
                 dueDate={todo.due_date.toISOString().split('T')[0]}
               />
             ))}
-          </Box>  
-
+          </Box>
         </Box>
       </Container>
     </React.Fragment>
