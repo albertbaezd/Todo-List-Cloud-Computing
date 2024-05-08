@@ -4,7 +4,15 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 
-const TodoStrip = ({ description, priority, onDelete, onEdit }) => {
+interface TodoStripProps {
+  description: string;
+  priority?: string;
+  dueDate?: string; // Make dueDate optional by adding '?'
+  onDelete: () => void;
+  onEdit: (newDescription: string) => void;
+}
+
+const TodoStrip: React.FC<TodoStripProps> = ({ description, priority, dueDate, onDelete, onEdit }) => {
   const [editMode, setEditMode] = React.useState(false);
   const [newDescription, setNewDescription] = React.useState(description);
 
@@ -17,7 +25,7 @@ const TodoStrip = ({ description, priority, onDelete, onEdit }) => {
     }
   };
 
-  const handleChange = (event) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewDescription(event.target.value);
   };
 
@@ -35,17 +43,22 @@ const TodoStrip = ({ description, priority, onDelete, onEdit }) => {
           fullWidth
           autoFocus
           InputLabelProps={{ sx: { marginTop: '5px' } }}
-          sx={{ overflowY: 'auto', textAlign:"left" }}
+          sx={{ overflowY: 'auto', textAlign: "left" }}
         />
       ) : (
-        <Typography variant="body1" sx={{ flexGrow: 1, overflowY: 'auto' }}>
-            {description}
+        <Typography variant="body1" sx={{ flexGrow: 1, overflowY: 'auto', textAlign: "left"}}>
+          {description}
         </Typography>
       )}
-      <Chip label={priority} variant="outlined" sx={{ mx: 1 }} />
+      {priority && (
+        <Chip label={priority} variant="outlined" sx={{ mx: 1 }} />
+      )}
+      {dueDate && (
+        <Chip label={dueDate} variant="outlined" sx={{ mx: 1 }} />
+      )}
       <IconButton onClick={handleEdit} sx={{ mx: 1 }}>
         {editMode ? (
-          <SaveIcon color='info'/>
+          <SaveIcon color='info' />
         ) : (
           <EditIcon />
         )}

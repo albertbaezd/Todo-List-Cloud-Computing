@@ -92,12 +92,11 @@ export default function TodolistContainer() {
                     label="Filter"
                     id="filter"
                     variant="outlined"
-                    defaultValue="all"
+                    defaultValue="pending"
                     sx={{ width: "100%" }}
                   >
-                    <MenuItem value="all">All</MenuItem>
-                    <MenuItem value="completed">Completed</MenuItem>
                     <MenuItem value="pending">Pending</MenuItem>
+                    <MenuItem value="completed">Completed</MenuItem>
                   </Select>
                 </Box>
               </Box>
@@ -131,7 +130,7 @@ export default function TodolistContainer() {
             <StatusBar activeFilter={activeFilter} onFilterChange={handleFilterChange}/>
             <TodoStrip description={"description descriptiondescriptiondescriptiondescriptiondescription"} priority={"priority"} onDelete={()=>{}} onEdit={()=>{}}/>
             <TodoStrip description={"description descriptiondescriptiondescriptiondescriptiondescription"} priority={"priority"} onDelete={()=>{}} onEdit={()=>{}}/>
-            <TodoStrip description={"description descriptiondescriptiondescriptiondescriptiondescription"} priority={"priority"} onDelete={()=>{}} onEdit={()=>{}}/>
+            <TodoStrip description={"description descriptiondescriptiondescriptiondescriptiondescription"} priority={"priority"} onDelete={()=>{}} onEdit={()=>{}} dueDate='2018-22-03'/>
           </Box>  
 
         </Box>
