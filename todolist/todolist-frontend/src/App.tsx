@@ -8,6 +8,7 @@ import {
 import "./App.css";
 import Todolist from "./Todolist.tsx";
 import LoginPage from "./components/Login.tsx";
+import RegisterPage from "./components/Register.tsx";
 
 function App() {
   const [user_id, setUserId] = useState("");
@@ -48,6 +49,18 @@ function App() {
             <Route
               path="/todolist"
               element={<Todolist user_id={user_id} username={username} />}
+            />
+            {/* Add the Register route here */}
+            <Route
+              path="/register"
+              element={
+                <RegisterPage
+                  username={username}
+                  password={password}
+                  onUsernameChange={handleUsernameChange}
+                  onPasswordChange={handlePasswordChange}
+                />
+              }
             />
           </Routes>
         </header>

@@ -1,7 +1,7 @@
 import React, { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Box, Button, TextField, Typography, Alert } from "@mui/material";
+import { Box, Button, TextField, Typography, Alert, Link } from "@mui/material";
 import logoSrc from "../todo-logo-black.png"; // Adjust the path as needed
 
 interface LoginPageProps {
@@ -106,6 +106,19 @@ function LoginPage({
           Login
         </Button>
       </form>
+
+      {/* Registration link */}
+      <Typography variant="body1" sx={{ mt: 2 }}>
+        Are you not registered yet?{" "}
+        <Link
+          component="button"
+          variant="body1"
+          onClick={() => navigate("/register")}
+          sx={{ color: "blue", cursor: "pointer" }}
+        >
+          Register
+        </Link>
+      </Typography>
     </Box>
   );
 }
