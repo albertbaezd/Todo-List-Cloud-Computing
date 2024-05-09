@@ -299,6 +299,39 @@ export default function TodolistContainer({
     sortCriterion
   );
 
+  const handleTodoEdit = (
+    todoId: string,
+    newDescription: string,
+    newStatus: string
+  ) => {
+    // If the new status is "pending," update the pendingTodos list
+    if (newStatus === "pending") {
+      // Remove the todo from the completed list if it was completed
+      setCompletedTodos((todos) => todos.filter((todo) => todo.id !== todoId));
+
+      // Add or update the todo in the pendingTodos list
+      setPendingTodos((todos) =>
+        todos.map((todo) =>
+          todo.id === todoId
+            ? { ...todo, description: newDescription, status: newStatus }
+            : todo
+        )
+      );
+    } else {
+      // Remove the todo from the pending list if it was pending
+      setPendingTodos((todos) => todos.filter((todo) => todo.id !== todoId));
+
+      // Add or update the todo in the completedTodos list
+      setCompletedTodos((todos) =>
+        todos.map((todo) =>
+          todo.id === todoId
+            ? { ...todo, description: newDescription, status: newStatus }
+            : todo
+        )
+      );
+    }
+  };
+
   return (
     <React.Fragment>
       <CssBaseline />
@@ -451,7 +484,9 @@ export default function TodolistContainer({
                 dueDate={todo.due_date}
                 todoId={todo.id}
                 onDelete={() => {}}
-                onEdit={() => {}}
+                onEdit={(newDescription, newStatus) =>
+                  handleTodoEdit(todo.id, newDescription, newStatus)
+                }
                 onToggleStatus={handleStatusToggle}
                 showToast={showToast}
                 user_id={user_id}

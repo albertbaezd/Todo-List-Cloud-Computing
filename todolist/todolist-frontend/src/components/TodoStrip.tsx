@@ -25,7 +25,7 @@ interface TodoStripProps {
   onDelete: () => void;
   status: string; // Completed or Pending
   onToggleStatus: (todoId: string, newStatus: string) => void;
-  onEdit: (newDescription: string) => void;
+  onEdit: (newDescription: string, newStatus: string) => void;
   todoId: string;
   showToast: (message: string, severity: "success" | "error") => void;
   user_id: string;
@@ -67,11 +67,12 @@ const TodoStrip: React.FC<TodoStripProps> = ({
     // }
     if (editMode) {
       try {
+        const newStatus = checked ? "completed" : "pending";
         const updatedTodo = {
           description: newDescription,
           added_date: new Date().toISOString().split("T")[0], // Assuming today is the added date
           due_date: dueDate,
-          status: checked ? "completed" : "pending",
+          status: newStatus,
           priority: priority || "low", // Ensure priority is set or default to "low"
           user_id: user_id, // Adjust accordingly to include the relevant user ID
         };
@@ -84,7 +85,7 @@ const TodoStrip: React.FC<TodoStripProps> = ({
 
         if (response.status === 200) {
           showToast("Todo updated successfully!", "success");
-          onEdit(newDescription); // Trigger any additional edit handling logic if needed
+          onEdit(newDescription, newStatus); // Trigger any additional edit handling logic if needed
         } else {
           showToast("Error updating todo. Please try again.", "error");
         }
