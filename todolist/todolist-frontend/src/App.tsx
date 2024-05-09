@@ -47,21 +47,11 @@ function App() {
               }
             />
             <Route
-              path="/todolist"
+              path="/todolist/:user_id"
               element={<Todolist user_id={user_id} username={username} />}
             />
             {/* Add the Register route here */}
-            <Route
-              path="/register"
-              element={
-                <RegisterPage
-                  username={username}
-                  password={password}
-                  onUsernameChange={handleUsernameChange}
-                  onPasswordChange={handlePasswordChange}
-                />
-              }
-            />
+            <Route path="/register" element={<RegisterPage />} />
           </Routes>
         </header>
       </Router>

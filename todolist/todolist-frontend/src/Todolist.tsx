@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useFormik } from "formik";
+import { useParams } from "react-router-dom";
 import * as Yup from "yup";
 import CssBaseline from "@mui/material/CssBaseline";
 import Container from "@mui/material/Container";
@@ -120,6 +121,7 @@ export default function TodolistContainer({
   username,
 }: TodolistContainerProps) {
   // Initialize states with dummy data
+  const { user_id: user_id_url } = useParams<{ user_id: string }>();
 
   const [pendingTodos, setPendingTodos] = React.useState<Todo[]>(
     dummyTodos.filter((todo) => todo.status === "pending")
@@ -166,7 +168,9 @@ export default function TodolistContainer({
       try {
         // Replace this IP address with your actual URL later
         const response = await axios.get(
-          `${process.env.REACT_APP_API_BASE_URL}/api/users/${user_id}/todos`
+          user_id
+            ? `${process.env.REACT_APP_API_BASE_URL}/api/users/${user_id}/todos`
+            : `${process.env.REACT_APP_API_BASE_URL}/api/users/${user_id_url}/todos`
         );
         console.log(response.data);
         const todos: Todo[] = response.data;
@@ -184,7 +188,7 @@ export default function TodolistContainer({
     };
 
     fetchTodos(); // Call the async function inside `useEffect`
-  }, [user_id]); // Empty dependency array ensures this runs once when the component mounts
+  }, [user_id, user_id_url]); // Empty dependency array ensures this runs once when the component mounts
 
   // const handleSubmit = async (e: React.FormEvent) => {
   //   e.preventDefault();

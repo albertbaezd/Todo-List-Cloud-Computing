@@ -29,10 +29,14 @@ function LoginPage({
         `${process.env.REACT_APP_API_BASE_URL}/api/login`,
         { username, password }
       );
+
       if (response.status === 200) {
-        // Redirect to Todolist page
-        onUserIdChange(response.data.user_id);
-        navigate("/todolist");
+        // Extract the user_id and set it using the provided callback
+        const userId = response.data.user_id;
+        onUserIdChange(userId);
+
+        // Navigate to /todolist/:userid
+        navigate(`/todolist/${userId}`);
       }
     } catch (err: any) {
       if (err.response) {
