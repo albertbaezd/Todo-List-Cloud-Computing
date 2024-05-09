@@ -454,6 +454,7 @@ export default function TodolistContainer({
                 onEdit={() => {}}
                 onToggleStatus={handleStatusToggle}
                 showToast={showToast}
+                user_id={user_id}
               />
             ))}
           </Box>

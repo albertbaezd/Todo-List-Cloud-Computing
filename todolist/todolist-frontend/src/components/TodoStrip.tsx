@@ -28,6 +28,7 @@ interface TodoStripProps {
   onEdit: (newDescription: string) => void;
   todoId: string;
   showToast: (message: string, severity: "success" | "error") => void;
+  user_id: string;
 }
 
 const TodoStrip: React.FC<TodoStripProps> = ({
@@ -40,6 +41,7 @@ const TodoStrip: React.FC<TodoStripProps> = ({
   status,
   onToggleStatus,
   showToast,
+  user_id,
 }) => {
   const [editMode, setEditMode] = React.useState(false);
   const [newDescription, setNewDescription] = React.useState(description);
@@ -56,12 +58,44 @@ const TodoStrip: React.FC<TodoStripProps> = ({
     setModalOpen(false);
   };
 
-  const handleEdit = () => {
+  const handleEdit = async () => {
     // Toggle edit mode
     setEditMode(!editMode);
     // If exiting edit mode, save the changes
-    if (!editMode) {
-      onEdit(newDescription);
+    // if (!editMode) {
+    //   onEdit(newDescription);
+    // }
+    if (editMode) {
+      try {
+        const updatedTodo = {
+          description: newDescription,
+          added_date: new Date().toISOString().split("T")[0], // Assuming today is the added date
+          due_date: dueDate,
+          status: checked ? "completed" : "pending",
+          priority: priority || "low", // Ensure priority is set or default to "low"
+          user_id: user_id, // Adjust accordingly to include the relevant user ID
+        };
+
+        // Make a PUT request to update the todo
+        const response = await axios.put(
+          `${process.env.REACT_APP_API_BASE_URL}/api/todos/${todoId}`,
+          updatedTodo
+        );
+
+        if (response.status === 200) {
+          showToast("Todo updated successfully!", "success");
+          onEdit(newDescription); // Trigger any additional edit handling logic if needed
+        } else {
+          showToast("Error updating todo. Please try again.", "error");
+        }
+      } catch (error) {
+        showToast(
+          "Error updating todo: " +
+            (error.response?.data.error || error.message),
+          "error"
+        );
+        console.error("Error updating todo:", error);
+      }
     }
   };
 
@@ -151,7 +185,7 @@ const TodoStrip: React.FC<TodoStripProps> = ({
       </IconButton>
       {editMode && (
         <IconButton onClick={onDelete} sx={{ mx: 1 }}>
-          <DeleteIcon />
+          <DeleteIcon color="warning" />
         </IconButton>
       )}
       {/* Confirmation Modal */}
