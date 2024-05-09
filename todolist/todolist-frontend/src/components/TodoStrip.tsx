@@ -20,6 +20,7 @@ import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
+import { AddToCalendarButton } from "add-to-calendar-button-react";
 
 interface TodoStripProps {
   description: string;
@@ -195,6 +196,22 @@ const TodoStrip: React.FC<TodoStripProps> = ({
     setNewDueDate(event.target.value);
   };
 
+  const dueDateObj = dueDate ? new Date(dueDate) : new Date(); // If `dueDate` is undefined, fallback to the current date
+  const endDateObj = new Date(dueDateObj.getTime() + 15 * 24 * 60 * 60 * 1000); // Add 15 days to the due date
+  const currentTime = new Date(); // Get the current time
+  const startTimeObj = new Date(currentTime.getTime() + 1 * 60 * 60 * 1000); // Add 1 hour to the current time
+  const endTimeObj = new Date(currentTime.getTime() + 2 * 60 * 60 * 1000); // Add 2 hours to the current time
+
+  // Convert the Date objects to strings in "YYYY-MM-DD" and "HH:MM" formats
+  const startDate = dueDateObj.toISOString().split("T")[0]; // "YYYY-MM-DD" format
+  const endDate = endDateObj.toISOString().split("T")[0];
+  const startTime = startTimeObj
+    .toTimeString()
+    .split(":")
+    .slice(0, 2)
+    .join(":"); // "HH:MM" format
+  const endTime = endTimeObj.toTimeString().split(":").slice(0, 2).join(":");
+
   return (
     <Box
       sx={{
@@ -265,6 +282,24 @@ const TodoStrip: React.FC<TodoStripProps> = ({
           )}
         </>
       )}
+      <AddToCalendarButton
+        name="Event Title"
+        options={[
+          "Apple",
+          "Google",
+          "Outlook.com",
+          "Microsoft365",
+          "MicrosoftTeams",
+        ]}
+        location="New York"
+        startDate={startDate}
+        endDate={endDate}
+        startTime={startTime}
+        endTime={endTime}
+        timeZone="America/New_York"
+        hideCheckmark={true}
+        size={"5|3|3"}
+      ></AddToCalendarButton>
       {/* {priority && (
         <Chip
           label={priority}
