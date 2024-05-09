@@ -1,94 +1,117 @@
-import * as React from 'react';
-import CssBaseline from '@mui/material/CssBaseline';
-import Container from '@mui/material/Container';
-import { Box, Button, Divider, MenuItem, Select, TextField, InputLabel } from '@mui/material';
-import axios from 'axios';
-import Navbar from "./components/Navbar.tsx"
-import TodoStrip from "./components/TodoStrip.tsx"
-import StatusBar from "./components/StatusBar.tsx"
+import * as React from "react";
+import CssBaseline from "@mui/material/CssBaseline";
+import Container from "@mui/material/Container";
+import {
+  Box,
+  Button,
+  Divider,
+  MenuItem,
+  Select,
+  TextField,
+  InputLabel,
+} from "@mui/material";
+import axios from "axios";
+import Navbar from "./components/Navbar.tsx";
+import TodoStrip from "./components/TodoStrip.tsx";
+import StatusBar from "./components/StatusBar.tsx";
 
 type Todo = {
   id: string;
   description: string;
-  added_date: Date;
-  due_date: Date;
-  status: boolean; // `true` for completed, `false` for pending
-  priority_id: number;
+  added_date: string;
+  due_date: string;
+  status: string; // `true` for completed, `false` for pending
+  priority: string;
+};
+
+interface TodolistContainerProps {
+  user_id: string;
+  username: string;
 }
 
-export default function TodolistContainer() {
+export default function TodolistContainer({
+  user_id,
+  username,
+}: TodolistContainerProps) {
   // Dummy JSON data
   const dummyTodos: Todo[] = [
     {
-      id: '1',
-      description: 'First Todo',
-      added_date: new Date(),
-      due_date: new Date('2024-12-31'),
-      status: false,
-      priority_id: 1
+      id: "1",
+      description: "First Todo",
+      added_date: "2024-12-31",
+      due_date: "2024-12-31",
+      status: "pending",
+      priority: "low",
     },
     {
-      id: '2',
-      description: 'Second Todo',
-      added_date: new Date(),
-      due_date: new Date('2024-06-15'),
-      status: false,
-      priority_id: 2
+      id: "2",
+      description: "Second Todo",
+      added_date: "2024-12-31",
+      due_date: "2024-12-31",
+      status: "pending",
+      priority: "low",
     },
     {
-      id: '3',
-      description: 'Third Todo',
-      added_date: new Date(),
-      due_date: new Date('2024-06-15'),
-      status: false,
-      priority_id: 3
+      id: "3",
+      description: "Third Todo",
+      added_date: "2024-12-31",
+      due_date: "2024-12-31",
+      status: "pending",
+      priority: "low",
     },
     {
-      id: '4',
-      description: 'Compl 1 Todo',
-      added_date: new Date(),
-      due_date: new Date('2024-06-15'),
-      status: true,
-      priority_id: 2
+      id: "4",
+      description: "Compl 1 Todo",
+      added_date: "2024-12-31",
+      due_date: "2024-12-31",
+      status: "completed",
+      priority: "low",
     },
     {
-      id: '5',
-      description: 'Compl 2 Todo',
-      added_date: new Date(),
-      due_date: new Date('2024-06-15'),
-      status: true,
-      priority_id: 1
+      id: "5",
+      description: "Compl 2 Todo",
+      added_date: "2024-12-31",
+      due_date: "2024-12-31",
+      status: "completed",
+      priority: "low",
     },
     {
-      id: '6',
-      description: 'Compl 3 Todo',
-      added_date: new Date(),
-      due_date: new Date('2024-08-22'),
-      status: true,
-      priority_id: 3
-    }
+      id: "6",
+      description: "Compl 3 Todo",
+      added_date: "2024-12-31",
+      due_date: "2024-12-31",
+      status: "completed",
+      priority: "low",
+    },
   ];
 
   // Initialize states with dummy data
-  const [pendingTodos, setPendingTodos] = React.useState<Todo[]>(dummyTodos.filter(todo => todo.status === false));
-  const [completedTodos, setCompletedTodos] = React.useState<Todo[]>(dummyTodos.filter(todo => todo.status === true));
+  const [pendingTodos, setPendingTodos] = React.useState<Todo[]>(
+    dummyTodos.filter((todo) => todo.status === "pending")
+  );
+  const [completedTodos, setCompletedTodos] = React.useState<Todo[]>(
+    dummyTodos.filter((todo) => todo.status === "completed")
+  );
   const [activeFilter, setActiveFilter] = React.useState(false);
 
   React.useEffect(() => {
     const fetchTodos = async () => {
       try {
         // Replace this IP address with your actual URL later
-        const response = await axios.get('http://your-ip-address-here/api/todos');
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_BASE_URL}/api/users/${user_id}/todos`
+        );
+        console.log(response.data);
         const todos: Todo[] = response.data;
 
         // Separate pending and completed todos
-        const pending = todos.filter((todo) => !todo.status);
-        const completed = todos.filter((todo) => todo.status);
+        const pending = todos.filter((todo) => todo.status === "pending");
+        const completed = todos.filter((todo) => todo.status === "completed");
 
         setPendingTodos(pending);
         setCompletedTodos(completed);
       } catch (error) {
-        console.error('Error fetching todos:', error);
+        console.error("Error fetching todos:", error);
         // Fallback to dummy JSON data (already set in state)
       }
     };
@@ -109,20 +132,28 @@ export default function TodolistContainer() {
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="lg">
-        <Box sx={{ bgcolor: '#d3dfed', height: '100%', margin: "5%", borderRadius: "20px", padding: "5%" }}>
+        <Box
+          sx={{
+            bgcolor: "#d3dfed",
+            height: "100%",
+            margin: "5%",
+            borderRadius: "20px",
+            padding: "5%",
+          }}
+        >
           <Navbar />
           <Box
             component="form"
             onSubmit={handleSubmit}
             sx={{
-              bgcolor: 'white',
-              padding: '24px',
-              borderRadius: '20px',
-              boxShadow: '2px 5px 20px #696363',
-              height: 'auto',
-              display: 'flex',
-              flexDirection: 'column',
-              marginTop: "20px"
+              bgcolor: "white",
+              padding: "24px",
+              borderRadius: "20px",
+              boxShadow: "2px 5px 20px #696363",
+              height: "auto",
+              display: "flex",
+              flexDirection: "column",
+              marginTop: "20px",
             }}
           >
             <TextField
@@ -140,7 +171,9 @@ export default function TodolistContainer() {
               InputLabelProps={{ shrink: true }}
               sx={{ mb: 2 }}
             />
-            <InputLabel htmlFor="priority" sx={{ mt: 2, mb: 1 }}>Priority</InputLabel>
+            <InputLabel htmlFor="priority" sx={{ mt: 2, mb: 1 }}>
+              Priority
+            </InputLabel>
             <Select
               label="Priority"
               id="priority"
@@ -152,14 +185,25 @@ export default function TodolistContainer() {
               <MenuItem value="medium">Medium Priority</MenuItem>
               <MenuItem value="high">High Priority</MenuItem>
             </Select>
-            <Button type="submit" variant="contained" color="primary" sx={{ mb: 2 }}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{ mb: 2 }}
+            >
               Add
             </Button>
-            <Divider orientation="vertical" flexItem sx={{ marginY: "20px", bgcolor: '#a0a3a6', height: "5px" }} />
-            <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
-              <Box sx={{ width: '50%', paddingRight: '8px' }}>
+            <Divider
+              orientation="vertical"
+              flexItem
+              sx={{ marginY: "20px", bgcolor: "#a0a3a6", height: "5px" }}
+            />
+            <Box sx={{ display: "flex", flexDirection: "row", width: "100%" }}>
+              <Box sx={{ width: "50%", paddingRight: "8px" }}>
                 <Box sx={{ mb: 2 }}>
-                  <InputLabel htmlFor="filter" sx={{ mt: 2, mb: 1 }}>Filter</InputLabel>
+                  <InputLabel htmlFor="filter" sx={{ mt: 2, mb: 1 }}>
+                    Filter
+                  </InputLabel>
                   <Select
                     label="Filter"
                     id="filter"
@@ -172,9 +216,11 @@ export default function TodolistContainer() {
                   </Select>
                 </Box>
               </Box>
-              <Box sx={{ width: '50%', paddingLeft: '8px' }}>
+              <Box sx={{ width: "50%", paddingLeft: "8px" }}>
                 <Box sx={{ mb: 2 }}>
-                  <InputLabel htmlFor="sort" sx={{ mt: 2, mb: 1 }}>Sort</InputLabel>
+                  <InputLabel htmlFor="sort" sx={{ mt: 2, mb: 1 }}>
+                    Sort
+                  </InputLabel>
                   <Select
                     label="Sort"
                     id="sort"
@@ -189,24 +235,30 @@ export default function TodolistContainer() {
               </Box>
             </Box>
           </Box>
-          <Box sx={{
+          <Box
+            sx={{
               backgroundColor: "white",
               marginTop: "30px",
-              borderRadius: '10px',
-              boxShadow: '2px 5px 20px #696363',
-              height: 'auto',
-              display: 'flex',
-              flexDirection: 'column'
-            }}>
-            <StatusBar activeFilter={activeFilter} onFilterChange={handleFilterChange} />
+              borderRadius: "10px",
+              boxShadow: "2px 5px 20px #696363",
+              height: "auto",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <StatusBar
+              activeFilter={activeFilter}
+              onFilterChange={handleFilterChange}
+            />
             {(activeFilter ? completedTodos : pendingTodos).map((todo) => (
               <TodoStrip
                 key={todo.id}
                 description={todo.description}
-                priority={"priority"}
+                priority={todo.priority}
                 onDelete={() => {}}
                 onEdit={() => {}}
-                dueDate={todo.due_date.toISOString().split('T')[0]}
+                // dueDate={todo.due_date.toISOString().split("T")[0]}
+                dueDate={todo.due_date}
               />
             ))}
           </Box>

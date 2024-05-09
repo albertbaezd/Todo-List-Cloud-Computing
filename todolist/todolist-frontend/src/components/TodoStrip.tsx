@@ -1,8 +1,8 @@
-import * as React from 'react';
-import { Box, Chip, Typography, TextField, IconButton } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SaveIcon from '@mui/icons-material/Save';
+import * as React from "react";
+import { Box, Chip, Typography, TextField, IconButton } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
 
 interface TodoStripProps {
   description: string;
@@ -12,7 +12,13 @@ interface TodoStripProps {
   onEdit: (newDescription: string) => void;
 }
 
-const TodoStrip: React.FC<TodoStripProps> = ({ description, priority, dueDate, onDelete, onEdit }) => {
+const TodoStrip: React.FC<TodoStripProps> = ({
+  description,
+  priority,
+  dueDate,
+  onDelete,
+  onEdit,
+}) => {
   const [editMode, setEditMode] = React.useState(false);
   const [newDescription, setNewDescription] = React.useState(description);
 
@@ -30,7 +36,15 @@ const TodoStrip: React.FC<TodoStripProps> = ({ description, priority, dueDate, o
   };
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: "20px" }}>
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "100%",
+        padding: "20px",
+      }}
+    >
       {editMode ? (
         <TextField
           id="outlined-textarea"
@@ -42,26 +56,21 @@ const TodoStrip: React.FC<TodoStripProps> = ({ description, priority, dueDate, o
           variant="outlined"
           fullWidth
           autoFocus
-          InputLabelProps={{ sx: { marginTop: '5px' } }}
-          sx={{ overflowY: 'auto', textAlign: "left" }}
+          InputLabelProps={{ sx: { marginTop: "5px" } }}
+          sx={{ overflowY: "auto", textAlign: "left" }}
         />
       ) : (
-        <Typography variant="body1" sx={{ flexGrow: 1, overflowY: 'auto', textAlign: "left"}}>
+        <Typography
+          variant="body1"
+          sx={{ flexGrow: 1, overflowY: "auto", textAlign: "left" }}
+        >
           {description}
         </Typography>
       )}
-      {priority && (
-        <Chip label={priority} variant="outlined" sx={{ mx: 1 }} />
-      )}
-      {dueDate && (
-        <Chip label={dueDate} variant="outlined" sx={{ mx: 1 }} />
-      )}
+      {priority && <Chip label={priority} variant="outlined" sx={{ mx: 1 }} />}
+      {dueDate && <Chip label={dueDate} variant="outlined" sx={{ mx: 1 }} />}
       <IconButton onClick={handleEdit} sx={{ mx: 1 }}>
-        {editMode ? (
-          <SaveIcon color='info' />
-        ) : (
-          <EditIcon />
-        )}
+        {editMode ? <SaveIcon color="info" /> : <EditIcon />}
       </IconButton>
       {editMode && (
         <IconButton onClick={onDelete} sx={{ mx: 1 }}>

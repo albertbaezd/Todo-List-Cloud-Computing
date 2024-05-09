@@ -10,6 +10,7 @@ import Todolist from "./Todolist.tsx";
 import LoginPage from "./components/Login.tsx";
 
 function App() {
+  const [user_id, setUserId] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -19,6 +20,10 @@ function App() {
 
   const handlePasswordChange = (newPassword: string) => {
     setPassword(newPassword);
+  };
+
+  const handleUserIdChange = (newUserId: string) => {
+    setUserId(newUserId);
   };
 
   return (
@@ -36,10 +41,14 @@ function App() {
                   password={password}
                   onUsernameChange={handleUsernameChange}
                   onPasswordChange={handlePasswordChange}
+                  onUserIdChange={handleUserIdChange}
                 />
               }
             />
-            <Route path="/todolist" element={<Todolist />} />
+            <Route
+              path="/todolist"
+              element={<Todolist user_id={user_id} username={username} />}
+            />
           </Routes>
         </header>
       </Router>

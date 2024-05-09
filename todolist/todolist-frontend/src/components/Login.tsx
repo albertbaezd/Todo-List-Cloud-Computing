@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from "react";
+import React, { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -7,6 +7,7 @@ interface LoginPageProps {
   password: string;
   onUsernameChange: (username: string) => void;
   onPasswordChange: (password: string) => void;
+  onUserIdChange: (password: string) => void;
 }
 
 function LoginPage({
@@ -14,6 +15,7 @@ function LoginPage({
   password,
   onUsernameChange,
   onPasswordChange,
+  onUserIdChange,
 }: LoginPageProps) {
   const navigate = useNavigate();
   const [error, setError] = React.useState<string>("");
@@ -27,6 +29,7 @@ function LoginPage({
       );
       if (response.status === 200) {
         // Redirect to Todolist page
+        onUserIdChange(response.data.user_id);
         navigate("/todolist");
       }
     } catch (err: any) {

@@ -82,62 +82,75 @@ def get_todos(todo_id=None):
         return jsonify(todo_list)
     
 
-# @app.route("/api/todos", methods=['GET'])
-# def get_todos():
-#     db = get_db()
-#     cursor = db.execute('SELECT id, description, added_date, due_date, status, priority FROM Todo')
-#     todos = cursor.fetchall()
-#     # Converting rows to a list of dictionaries
-#     todo_list = [
-#         {
-#             "id": row[0],
-#             "description": row[1],
-#             "added_date": row[2],
-#             "due_date": row[3],
-#             "status": row[4],
-#             "priority": row[5]
-#         }
-#         for row in todos
-#     ]
-#     return jsonify(todo_list)
+# Retrieve todos by user ID
+@app.route('/api/users/<int:user_id>/todos', methods=['GET'])
+def get_user_todos(user_id):
+    db = get_db()
+    cursor = db.execute(
+        'SELECT id, description, added_date, due_date, status, priority FROM Todo WHERE user_id = ?',
+        (user_id,)
+    )
+    todos = cursor.fetchall()
+
+    if not todos:
+        return jsonify({"error": "No todos found for the given user"}), 404
+
+    todo_list = [
+        {
+            "id": row[0],
+            "description": row[1],
+            "added_date": row[2],
+            "due_date": row[3],
+            "status": row[4],
+            "priority": row[5]
+        }
+        for row in todos
+    ]
+    return jsonify(todo_list)
+
 
 # Create a new todo item
 @app.route("/api/todos", methods=['POST'])
 def create_todo():
     data = request.json
-    if 'description' not in data or 'status' not in data:
-        return jsonify({"error": "Missing required fields: 'description' and/or 'status'"}), 400
+    if 'description' not in data or 'status' not in data or 'user_id' not in data:
+        return jsonify({"error": "Missing required fields: 'description', 'status', and/or 'user_id'"}), 400
+
     db = get_db()
     db.execute(
-        'INSERT INTO Todo (description, added_date, due_date, status, priority) VALUES (?, ?, ?, ?, ?)',
+        'INSERT INTO Todo (description, added_date, due_date, status, priority, user_id) VALUES (?, ?, ?, ?, ?, ?)',
         (
             data['description'],
             data.get('added_date'),
             data.get('due_date'),
             data['status'],
-            data.get('priority')
+            data.get('priority'),
+            data['user_id']
         )
     )
     db.commit()
     return jsonify({"message": "Todo created successfully"}), 201
 
+
 # Update an existing todo item
 @app.route("/api/todos/<int:todo_id>", methods=['PUT'])
 def update_todo(todo_id):
     data = request.json
-    if 'description' not in data or 'status' not in data:
-        return jsonify({"error": "Missing required fields: 'description' and/or 'status'"}), 400
+    if 'description' not in data or 'status' not in data or 'user_id' not in data:
+        return jsonify({"error": "Missing required fields: 'description', 'status', and/or 'user_id'"}), 400
+
     db = get_db()
     cursor = db.execute('SELECT id FROM Todo WHERE id = ?', (todo_id,))
     if cursor.fetchone():
         db.execute(
-            'UPDATE Todo SET description = ?, added_date = ?, due_date = ?, status = ?, priority = ? WHERE id = ?',
+            'UPDATE Todo SET description = ?, added_date = ?, due_date = ?, status = ?, priority = ?, user_id = ? WHERE id = ?',
             (
                 data['description'],
                 data.get('added_date'),
                 data.get('due_date'),
                 data['status'],
                 data.get('priority'),
+                data['user_id'],
                 todo_id
             )
         )
@@ -146,33 +159,36 @@ def update_todo(todo_id):
     return jsonify({"error": "Todo not found"}), 404
 
 
+
 # Delete a todo item
 @app.route("/api/todos/<int:todo_id>", methods=['DELETE'])
 def delete_todo(todo_id):
+    user_id = request.args.get("user_id")
     db = get_db()
-    cursor = db.execute('SELECT id FROM Todo WHERE id = ?', (todo_id,))
+    cursor = db.execute('SELECT id FROM Todo WHERE id = ? AND user_id = ?', (todo_id, user_id))
     if cursor.fetchone():
-        db.execute('DELETE FROM Todo WHERE id = ?', (todo_id,))
+        db.execute('DELETE FROM Todo WHERE id = ? AND user_id = ?', (todo_id, user_id))
         db.commit()
         return jsonify({"message": "Todo deleted successfully"})
-    return jsonify({"error": "Todo not found"}), 404
+    return jsonify({"error": "Todo not found or unauthorized action"}), 404
 
 # Endpoint to mark a todo as completed or pending
 @app.route("/api/todos/<int:todo_id>/status", methods=['PATCH'])
 def update_todo_status(todo_id):
     data = request.json
     new_status = data.get('status')
-    
+    user_id = data.get('user_id')
+
     if new_status not in ['completed', 'pending']:
         return jsonify({"error": "Invalid status. Allowed values: 'completed', 'pending'"}), 400
-    
+
     db = get_db()
-    cursor = db.execute('SELECT id FROM Todo WHERE id = ?', (todo_id,))
+    cursor = db.execute('SELECT id FROM Todo WHERE id = ? AND user_id = ?', (todo_id, user_id))
     if cursor.fetchone():
-        db.execute('UPDATE Todo SET status = ? WHERE id = ?', (new_status, todo_id))
+        db.execute('UPDATE Todo SET status = ? WHERE id = ? AND user_id = ?', (new_status, todo_id, user_id))
         db.commit()
         return jsonify({"message": f"Todo status updated to {new_status}"})
-    return jsonify({"error": "Todo not found"}), 404
+    return jsonify({"error": "Todo not found or unauthorized action"}), 404
 
 # User Registration Endpoint
 @app.route('/api/register', methods=['POST'])
