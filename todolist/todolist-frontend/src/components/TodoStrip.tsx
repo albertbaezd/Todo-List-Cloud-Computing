@@ -22,7 +22,7 @@ interface TodoStripProps {
   description: string;
   priority?: string;
   dueDate?: string; // Make dueDate optional by adding '?'
-  onDelete: () => void;
+  onDelete: (todoId: string, status: string) => void;
   status: string; // Completed or Pending
   onToggleStatus: (todoId: string, newStatus: string) => void;
   onEdit: (newDescription: string, newStatus: string) => void;
@@ -130,6 +130,29 @@ const TodoStrip: React.FC<TodoStripProps> = ({
     }
   };
 
+  const handleTodoDelete = async () => {
+    try {
+      // Send a DELETE request to remove the todo
+      const response = await axios.delete(
+        `${process.env.REACT_APP_API_BASE_URL}/api/todos/${todoId}`,
+        { params: { user_id } } // Include user_id as a parameter
+      );
+
+      if (response.status === 200) {
+        showToast("Todo deleted successfully!", "success");
+        onDelete(todoId, status); // Call the parent-provided onDelete function to update the UI
+      } else {
+        showToast("Error deleting todo. Please try again.", "error");
+      }
+    } catch (error) {
+      showToast(
+        "Error deleting todo: " + (error.response?.data.error || error.message),
+        "error"
+      );
+      console.error("Error deleting todo:", error);
+    }
+  };
+
   // Function to toggle status and make a PATCH request
   // const handleCheckboxToggle = async () => {
   //   const newStatus = checked ? "pending" : "completed";
@@ -185,7 +208,7 @@ const TodoStrip: React.FC<TodoStripProps> = ({
         {editMode ? <SaveIcon color="info" /> : <EditIcon />}
       </IconButton>
       {editMode && (
-        <IconButton onClick={onDelete} sx={{ mx: 1 }}>
+        <IconButton onClick={handleTodoDelete} sx={{ mx: 1 }}>
           <DeleteIcon color="warning" />
         </IconButton>
       )}

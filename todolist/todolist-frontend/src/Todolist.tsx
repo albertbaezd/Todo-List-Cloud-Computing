@@ -332,6 +332,17 @@ export default function TodolistContainer({
     }
   };
 
+  // Function to handle the deletion of a todo item
+  const handleTodoDelete = (todoId: string, status: string) => {
+    if (status === "pending") {
+      // Remove the todo from the pending list
+      setPendingTodos((todos) => todos.filter((todo) => todo.id !== todoId));
+    } else if (status === "completed") {
+      // Remove the todo from the completed list
+      setCompletedTodos((todos) => todos.filter((todo) => todo.id !== todoId));
+    }
+  };
+
   return (
     <React.Fragment>
       <CssBaseline />
@@ -483,7 +494,7 @@ export default function TodolistContainer({
                 status={todo.status}
                 dueDate={todo.due_date}
                 todoId={todo.id}
-                onDelete={() => {}}
+                onDelete={handleTodoDelete}
                 onEdit={(newDescription, newStatus) =>
                   handleTodoEdit(todo.id, newDescription, newStatus)
                 }
