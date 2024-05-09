@@ -39,18 +39,13 @@ const Navbar: React.FC<NavbarProps> = ({ username }) => {
   return (
     <>
       <AppBar position="static">
-        <Toolbar>
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           {/* Logo */}
           <img
             src={logoSrc}
             alt="Logo"
             style={{ height: "40px", marginRight: "16px" }}
           />
-
-          {/* Todo list option */}
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Todo list
-          </Typography>
 
           {/* Account button */}
           <Button
