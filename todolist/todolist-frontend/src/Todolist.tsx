@@ -217,7 +217,7 @@ export default function TodolistContainer({
             padding: "5%",
           }}
         >
-          <Navbar />
+          <Navbar username={username} />
           <Box
             component="form"
             onSubmit={handleSubmit}
