@@ -7,12 +7,16 @@ import {
   TextField,
   IconButton,
   Checkbox,
+  Modal,
+  Button,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Save";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface TodoStripProps {
   description: string;
@@ -38,6 +42,17 @@ const TodoStrip: React.FC<TodoStripProps> = ({
   const [editMode, setEditMode] = React.useState(false);
   const [newDescription, setNewDescription] = React.useState(description);
   const [checked, setChecked] = React.useState(status === "completed");
+  const [isModalOpen, setModalOpen] = React.useState(false);
+
+  // Open the confirmation modal
+  const handleModalOpen = () => {
+    setModalOpen(true);
+  };
+
+  // Close the confirmation modal
+  const handleModalClose = () => {
+    setModalOpen(false);
+  };
 
   const handleEdit = () => {
     // Toggle edit mode
@@ -52,29 +67,36 @@ const TodoStrip: React.FC<TodoStripProps> = ({
     setNewDescription(event.target.value);
   };
 
-  // Function to toggle status and make a PATCH request
-  const handleCheckboxToggle = async () => {
+  const confirmToggleStatus = () => {
     const newStatus = checked ? "pending" : "completed";
     onToggleStatus(todoId, newStatus);
     setChecked(!checked);
-
-    // try {
-    //   // Make a PATCH request to update the todo status
-    //   // `${process.env.REACT_APP_API_BASE_URL}/api/todos/${todoId}/status`
-    //   const response = await axios.patch(
-    //     `${process.env.REACT_APP_API_BASE_URL}/api/todos/${todoId}/status`,
-    //     {
-    //       status: newStatus,
-    //     }
-    //   );
-    //   console.log(response.data.message); // Log success message
-    // } catch (error) {
-    //   console.error(
-    //     "Error updating todo status:",
-    //     error.response?.data || error.message
-    //   );
-    // }
+    handleModalClose();
   };
+
+  // // Function to toggle status and make a PATCH request
+  // const handleCheckboxToggle = async () => {
+  //   const newStatus = checked ? "pending" : "completed";
+  //   onToggleStatus(todoId, newStatus);
+  //   setChecked(!checked);
+
+  //   // try {
+  //   //   // Make a PATCH request to update the todo status
+  //   //   // `${process.env.REACT_APP_API_BASE_URL}/api/todos/${todoId}/status`
+  //   //   const response = await axios.patch(
+  //   //     `${process.env.REACT_APP_API_BASE_URL}/api/todos/${todoId}/status`,
+  //   //     {
+  //   //       status: newStatus,
+  //   //     }
+  //   //   );
+  //   //   console.log(response.data.message); // Log success message
+  //   // } catch (error) {
+  //   //   console.error(
+  //   //     "Error updating todo status:",
+  //   //     error.response?.data || error.message
+  //   //   );
+  //   // }
+  // };
 
   return (
     <Box
@@ -111,7 +133,7 @@ const TodoStrip: React.FC<TodoStripProps> = ({
       {priority && <Chip label={priority} variant="outlined" sx={{ mx: 1 }} />}
       {dueDate && <Chip label={dueDate} variant="outlined" sx={{ mx: 1 }} />}
       {/* Checkbox IconButton */}
-      <IconButton onClick={handleCheckboxToggle} sx={{ mx: 1 }}>
+      <IconButton onClick={handleModalOpen} sx={{ mx: 1 }}>
         <Checkbox
           checked={checked}
           icon={<CheckBoxOutlineBlankIcon />}
@@ -127,6 +149,45 @@ const TodoStrip: React.FC<TodoStripProps> = ({
           <DeleteIcon />
         </IconButton>
       )}
+      {/* Confirmation Modal */}
+      <Modal open={isModalOpen} onClose={handleModalClose}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 300,
+            bgcolor: "background.paper",
+            borderRadius: "8px",
+            boxShadow: 24,
+            p: 4,
+            textAlign: "center",
+          }}
+        >
+          <Typography variant="h6" component="h2" gutterBottom>
+            {`Are you sure you want to set this to ${
+              checked ? "pending" : "completed"
+            }?`}
+          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
+            <Button
+              onClick={confirmToggleStatus}
+              color="success"
+              variant="contained"
+            >
+              <CheckIcon />
+            </Button>
+            <Button
+              onClick={handleModalClose}
+              color="error"
+              variant="contained"
+            >
+              <CloseIcon />
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
     </Box>
   );
 };
