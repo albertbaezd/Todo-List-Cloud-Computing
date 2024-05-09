@@ -6,6 +6,7 @@ import os
 import sys
 import requests
 from flask_bcrypt import Bcrypt
+from flask_cors import CORS
 import re
 
 DATABASE = 'todolist.db'
@@ -21,6 +22,8 @@ app.config.from_object(__name__)
 
 # Encription
 bcrypt = Bcrypt(app)
+# Allow all domains to access endpoints starting with /api/*
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # HW4
 @app.route("/")

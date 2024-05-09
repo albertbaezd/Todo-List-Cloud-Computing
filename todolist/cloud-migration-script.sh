@@ -36,9 +36,9 @@ for file in "${SOURCE_FILES[@]}"; do
     gcloud compute scp $file $INSTANCE_NAME:$DESTINATION_PATH --zone $ZONE
 done
 
-# # Copying build folder from React
+# Copying build folder from React
 
-# gcloud compute scp --recurse build $INSTANCE_NAME:$DESTINATION_PATH --zone $ZONE
+gcloud compute scp --recurse build $INSTANCE_NAME:$DESTINATION_PATH --zone $ZONE
 
 # # Creating templates folder
 # gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "mkdir $TEMPLATES_FOLDER"
@@ -54,7 +54,7 @@ gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "sudo apt-get update &&
 gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "cd $VIRTUAL_ENV_DIR && python3 -m venv $VIRTUAL_ENV_NAME"
 
 # Activate virtual environment and install Flask
-gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "source $VIRTUAL_ENV_DIR/$VIRTUAL_ENV_NAME/bin/activate && pip install Flask requests"
+gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "source $VIRTUAL_ENV_DIR/$VIRTUAL_ENV_NAME/bin/activate && pip install Flask requests flask_bcrypt flask-cors"
 
 gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command "export API_URL=\"http://localhost:80\""
 
