@@ -67,35 +67,36 @@ const TodoStrip: React.FC<TodoStripProps> = ({
     setNewDescription(event.target.value);
   };
 
-  const confirmToggleStatus = () => {
+  const confirmToggleStatus = async () => {
     const newStatus = checked ? "pending" : "completed";
-    onToggleStatus(todoId, newStatus);
-    setChecked(!checked);
-    handleModalClose();
+
+    try {
+      // Make a PATCH request to update the todo status
+      // `${process.env.REACT_APP_API_BASE_URL}/api/todos/${todoId}/status`
+      const response = await axios.patch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/todos/${todoId}/status`,
+        {
+          status: newStatus,
+        }
+      );
+      onToggleStatus(todoId, newStatus);
+      setChecked(!checked);
+      handleModalClose();
+      console.log(response.data.message); // Log success message
+    } catch (error) {
+      console.error(
+        "Error updating todo status:",
+        error.response?.data || error.message
+      );
+    }
   };
 
-  // // Function to toggle status and make a PATCH request
+  // Function to toggle status and make a PATCH request
   // const handleCheckboxToggle = async () => {
   //   const newStatus = checked ? "pending" : "completed";
   //   onToggleStatus(todoId, newStatus);
   //   setChecked(!checked);
 
-  //   // try {
-  //   //   // Make a PATCH request to update the todo status
-  //   //   // `${process.env.REACT_APP_API_BASE_URL}/api/todos/${todoId}/status`
-  //   //   const response = await axios.patch(
-  //   //     `${process.env.REACT_APP_API_BASE_URL}/api/todos/${todoId}/status`,
-  //   //     {
-  //   //       status: newStatus,
-  //   //     }
-  //   //   );
-  //   //   console.log(response.data.message); // Log success message
-  //   // } catch (error) {
-  //   //   console.error(
-  //   //     "Error updating todo status:",
-  //   //     error.response?.data || error.message
-  //   //   );
-  //   // }
   // };
 
   return (
