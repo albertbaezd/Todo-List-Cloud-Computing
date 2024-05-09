@@ -108,28 +108,46 @@ def get_user_todos(user_id):
     ]
     return jsonify(todo_list)
 
-
 # Create a new todo item
 @app.route("/api/todos", methods=['POST'])
 def create_todo():
     data = request.json
+
+    # Validate required fields
     if 'description' not in data or 'status' not in data or 'user_id' not in data:
         return jsonify({"error": "Missing required fields: 'description', 'status', and/or 'user_id'"}), 400
 
+    # Validate priority field and default to "low" if not provided
+    priority = data.get('priority', 'low')
+    if priority not in ['low', 'medium', 'high']:
+        return jsonify({"error": "Invalid priority. Must be 'low', 'medium', or 'high'"}), 400
+
+    # Retrieve added_date and due_date directly, as they should already be in 'YYYY-MM-DD' format
+    added_date = data.get('added_date')
+    due_date = data.get('due_date')
+
+    # Insert the new todo item into the database
     db = get_db()
-    db.execute(
+    cursor = db.execute(
         'INSERT INTO Todo (description, added_date, due_date, status, priority, user_id) VALUES (?, ?, ?, ?, ?, ?)',
-        (
-            data['description'],
-            data.get('added_date'),
-            data.get('due_date'),
-            data['status'],
-            data.get('priority'),
-            data['user_id']
-        )
+        (data['description'], added_date, due_date, data['status'], priority, data['user_id'])
     )
     db.commit()
-    return jsonify({"message": "Todo created successfully"}), 201
+
+    # Retrieve the newly created ID
+    new_todo_id = cursor.lastrowid
+
+    # Return the created todo information
+    return jsonify({
+        "id": new_todo_id,
+        "description": data['description'],
+        "added_date": added_date,
+        "due_date": due_date,
+        "status": data['status'],
+        "priority": priority,
+        "user_id": data['user_id']
+    }), 201
+
 
 
 # Update an existing todo item
