@@ -164,13 +164,18 @@ const TodoStrip: React.FC<TodoStripProps> = ({
     }
   };
 
-  // Function to toggle status and make a PATCH request
-  // const handleCheckboxToggle = async () => {
-  //   const newStatus = checked ? "pending" : "completed";
-  //   onToggleStatus(todoId, newStatus);
-  //   setChecked(!checked);
-
-  // };
+  const getPriorityChipColor = (priority: string | undefined) => {
+    switch (priority) {
+      case "low":
+        return { backgroundColor: "#078019", color: "white" };
+      case "medium":
+        return { backgroundColor: "#eac518", color: "white" };
+      case "high":
+        return { backgroundColor: "red", color: "white" };
+      default:
+        return {};
+    }
+  };
 
   return (
     <Box
@@ -204,8 +209,21 @@ const TodoStrip: React.FC<TodoStripProps> = ({
           {description}
         </Typography>
       )}
-      {priority && <Chip label={priority} variant="outlined" sx={{ mx: 1 }} />}
-      {dueDate && <Chip label={dueDate} variant="outlined" sx={{ mx: 1 }} />}
+      {priority && (
+        <Chip
+          label={priority}
+          variant="outlined"
+          sx={{ mx: 1, ...getPriorityChipColor(priority) }}
+        />
+      )}
+      {dueDate && (
+        <Chip
+          label={dueDate}
+          variant="outlined"
+          color="warning"
+          sx={{ mx: 1 }}
+        />
+      )}
       {/* Checkbox IconButton */}
       <IconButton onClick={handleStatusModalOpen} sx={{ mx: 1 }}>
         <Checkbox
