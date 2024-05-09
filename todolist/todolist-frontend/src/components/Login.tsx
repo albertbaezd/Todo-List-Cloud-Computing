@@ -1,15 +1,24 @@
-// components/LoginPage.tsx
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState, FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-function LoginPage() {
+interface LoginPageProps {
+  username: string;
+  password: string;
+  onUsernameChange: (username: string) => void;
+  onPasswordChange: (password: string) => void;
+}
+
+function LoginPage({
+  username,
+  password,
+  onUsernameChange,
+  onPasswordChange,
+}: LoginPageProps) {
   const navigate = useNavigate();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error, setError] = React.useState<string>("");
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     try {
       const response = await axios.post(
@@ -18,14 +27,13 @@ function LoginPage() {
       );
       if (response.status === 200) {
         // Redirect to Todolist page
-        navigate('/todolist');
+        navigate("/todolist");
       }
     } catch (err: any) {
       if (err.response) {
-        setError(err.response.data.error || 'Login failed');
+        setError(err.response.data.error || "Login failed");
       } else {
-        console.log(err)
-        setError('An unknown error occurred');
+        setError("An unknown error occurred");
       }
     }
   };
@@ -39,7 +47,7 @@ function LoginPage() {
           <input
             type="text"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => onUsernameChange(e.target.value)}
           />
         </div>
         <div>
@@ -47,10 +55,10 @@ function LoginPage() {
           <input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => onPasswordChange(e.target.value)}
           />
         </div>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {error && <p style={{ color: "red" }}>{error}</p>}
         <button type="submit">Login</button>
       </form>
     </div>

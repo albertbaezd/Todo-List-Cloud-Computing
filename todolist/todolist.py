@@ -232,14 +232,22 @@ def login_user():
     data = request.json
     if 'username' not in data or 'password' not in data:
         return jsonify({"error": "Missing required fields: 'username' and/or 'password'"}), 400
+
     db = get_db()
-    cursor = db.execute('SELECT id, password FROM Users WHERE username = ?', (data['username'],))
+    # Modify the query to fetch the username alongside the ID and password
+    cursor = db.execute('SELECT id, username, password FROM Users WHERE username = ?', (data['username'],))
     user = cursor.fetchone()
-    # Ensure the user is not None and verify the password using the second element (index 1)
-    if not user or not bcrypt.check_password_hash(user[1], data['password']):
+
+    # Verify that the user exists and the password matches
+    if not user or not bcrypt.check_password_hash(user[2], data['password']):
         return jsonify({"error": "Invalid username or password"}), 401
-    # Access the user ID using the first element (index 0)
-    return jsonify({"message": "Login successful", "user_id": user[0]}), 200
+
+    # Return both user ID and username in the response
+    return jsonify({
+        "message": "Login successful",
+        "user_id": user[0],
+        "username": user[1]
+    }), 200
 
 
 # Old Methods
