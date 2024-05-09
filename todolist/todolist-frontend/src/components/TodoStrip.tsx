@@ -46,16 +46,27 @@ const TodoStrip: React.FC<TodoStripProps> = ({
   const [editMode, setEditMode] = React.useState(false);
   const [newDescription, setNewDescription] = React.useState(description);
   const [checked, setChecked] = React.useState(status === "completed");
-  const [isModalOpen, setModalOpen] = React.useState(false);
+  const [isStatusModalOpen, setStatusModalOpen] = React.useState(false);
+  const [isDeleteModalOpen, setDeleteModalOpen] = React.useState(false);
 
-  // Open the confirmation modal
-  const handleModalOpen = () => {
-    setModalOpen(true);
+  // Open the status confirmation modal
+  const handleStatusModalOpen = () => {
+    setStatusModalOpen(true);
   };
 
-  // Close the confirmation modal
-  const handleModalClose = () => {
-    setModalOpen(false);
+  // Close the status confirmation modal
+  const handleStatusModalClose = () => {
+    setStatusModalOpen(false);
+  };
+
+  // Open the delete confirmation modal
+  const handleDeleteModalOpen = () => {
+    setDeleteModalOpen(true);
+  };
+
+  // Close the delete confirmation modal
+  const handleDeleteModalClose = () => {
+    setDeleteModalOpen(false);
   };
 
   const handleEdit = async () => {
@@ -118,7 +129,7 @@ const TodoStrip: React.FC<TodoStripProps> = ({
       );
       onToggleStatus(todoId, newStatus);
       setChecked(!checked);
-      handleModalClose();
+      handleStatusModalClose();
       showToast("Status updated successfully!", "success");
       console.log(response.data.message); // Log success message
     } catch (error) {
@@ -196,7 +207,7 @@ const TodoStrip: React.FC<TodoStripProps> = ({
       {priority && <Chip label={priority} variant="outlined" sx={{ mx: 1 }} />}
       {dueDate && <Chip label={dueDate} variant="outlined" sx={{ mx: 1 }} />}
       {/* Checkbox IconButton */}
-      <IconButton onClick={handleModalOpen} sx={{ mx: 1 }}>
+      <IconButton onClick={handleStatusModalOpen} sx={{ mx: 1 }}>
         <Checkbox
           checked={checked}
           icon={<CheckBoxOutlineBlankIcon />}
@@ -208,12 +219,12 @@ const TodoStrip: React.FC<TodoStripProps> = ({
         {editMode ? <SaveIcon color="info" /> : <EditIcon />}
       </IconButton>
       {editMode && (
-        <IconButton onClick={handleTodoDelete} sx={{ mx: 1 }}>
+        <IconButton onClick={handleDeleteModalOpen} sx={{ mx: 1 }}>
           <DeleteIcon color="warning" />
         </IconButton>
       )}
-      {/* Confirmation Modal */}
-      <Modal open={isModalOpen} onClose={handleModalClose}>
+      {/* Status Confirmation Modal */}
+      <Modal open={isStatusModalOpen} onClose={handleStatusModalClose}>
         <Box
           sx={{
             position: "absolute",
@@ -242,7 +253,44 @@ const TodoStrip: React.FC<TodoStripProps> = ({
               <CheckIcon />
             </Button>
             <Button
-              onClick={handleModalClose}
+              onClick={handleStatusModalClose}
+              color="error"
+              variant="contained"
+            >
+              <CloseIcon />
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+      {/* Delete Confirmation Modal */}
+      <Modal open={isDeleteModalOpen} onClose={handleDeleteModalClose}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 300,
+            bgcolor: "background.paper",
+            borderRadius: "8px",
+            boxShadow: 24,
+            p: 4,
+            textAlign: "center",
+          }}
+        >
+          <Typography variant="h6" component="h2" gutterBottom>
+            Are you sure you want to delete this todo?
+          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "space-around", mt: 2 }}>
+            <Button
+              onClick={handleTodoDelete}
+              color="success"
+              variant="contained"
+            >
+              <CheckIcon />
+            </Button>
+            <Button
+              onClick={handleDeleteModalClose}
               color="error"
               variant="contained"
             >
