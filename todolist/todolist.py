@@ -38,6 +38,30 @@ def show_list():
     # No need to make an initial fetch here
     return render_template('index.html')
 
+@app.route("/todolist")
+def show_list():
+    api_url = os.environ.get("API_URL")
+    if not api_url:
+        print("URL environment variable not set: API_URL")
+        return 
+    # resp = requests.get(f"http://{api_url}/api/items")
+    # resp = resp.json()
+    # return render_template('index.html', todolist=resp)
+    # No need to make an initial fetch here
+    return render_template('index.html')
+
+@app.route("/login")
+def show_list():
+    api_url = os.environ.get("API_URL")
+    if not api_url:
+        print("URL environment variable not set: API_URL")
+        return 
+    # resp = requests.get(f"http://{api_url}/api/items")
+    # resp = resp.json()
+    # return render_template('index.html', todolist=resp)
+    # No need to make an initial fetch here
+    return render_template('index.html')
+
 @app.route("/api/items")
 def get_items():
     db = get_db()

@@ -9,6 +9,9 @@ import {
   Checkbox,
   Modal,
   Button,
+  Select,
+  SelectChangeEvent,
+  MenuItem,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -25,7 +28,11 @@ interface TodoStripProps {
   onDelete: (todoId: string, status: string) => void;
   status: string; // Completed or Pending
   onToggleStatus: (todoId: string, newStatus: string) => void;
-  onEdit: (newDescription: string, newStatus: string) => void;
+  onEdit: (
+    newDescription: string,
+    newStatus: string,
+    newPriority: string
+  ) => void;
   todoId: string;
   showToast: (message: string, severity: "success" | "error") => void;
   user_id: string;
@@ -48,6 +55,7 @@ const TodoStrip: React.FC<TodoStripProps> = ({
   const [checked, setChecked] = React.useState(status === "completed");
   const [isStatusModalOpen, setStatusModalOpen] = React.useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = React.useState(false);
+  const [newPriority, setNewPriority] = React.useState(priority || "low");
 
   // Open the status confirmation modal
   const handleStatusModalOpen = () => {
@@ -84,7 +92,7 @@ const TodoStrip: React.FC<TodoStripProps> = ({
           added_date: new Date().toISOString().split("T")[0], // Assuming today is the added date
           due_date: dueDate,
           status: newStatus,
-          priority: priority || "low", // Ensure priority is set or default to "low"
+          priority: newPriority || "low", // Ensure priority is set or default to "low"
           user_id: user_id, // Adjust accordingly to include the relevant user ID
         };
 
@@ -96,7 +104,7 @@ const TodoStrip: React.FC<TodoStripProps> = ({
 
         if (response.status === 200) {
           showToast("Todo updated successfully!", "success");
-          onEdit(newDescription, newStatus); // Trigger any additional edit handling logic if needed
+          onEdit(newDescription, newStatus, newPriority); // Trigger any additional edit handling logic if needed
         } else {
           showToast("Error updating todo. Please try again.", "error");
         }
@@ -177,6 +185,10 @@ const TodoStrip: React.FC<TodoStripProps> = ({
     }
   };
 
+  const handlePriorityChange = (event: SelectChangeEvent<string>) => {
+    setNewPriority(event.target.value); // event.target.value is already a string
+  };
+
   return (
     <Box
       sx={{
@@ -185,37 +197,59 @@ const TodoStrip: React.FC<TodoStripProps> = ({
         alignItems: "center",
         width: "100%",
         padding: "20px",
+        borderBottom: "2px solid #ebe3e3",
       }}
     >
       {editMode ? (
-        <TextField
-          id="outlined-textarea"
-          label="Description"
-          multiline
-          rows={4}
-          value={newDescription}
-          onChange={handleChange}
-          variant="outlined"
-          fullWidth
-          autoFocus
-          InputLabelProps={{ sx: { marginTop: "5px" } }}
-          sx={{ overflowY: "auto", textAlign: "left" }}
-        />
+        <>
+          <TextField
+            id="outlined-textarea"
+            label="Description"
+            multiline
+            rows={4}
+            value={newDescription}
+            onChange={handleChange}
+            variant="outlined"
+            fullWidth
+            autoFocus
+            InputLabelProps={{ sx: { marginTop: "5px" } }}
+            sx={{ overflowY: "auto", textAlign: "left" }}
+          />
+          <Select
+            value={newPriority}
+            onChange={handlePriorityChange}
+            variant="outlined"
+            sx={{ mx: 1 }}
+          >
+            <MenuItem value="low">Low</MenuItem>
+            <MenuItem value="medium">Medium</MenuItem>
+            <MenuItem value="high">High</MenuItem>
+          </Select>
+        </>
       ) : (
-        <Typography
-          variant="body1"
-          sx={{ flexGrow: 1, overflowY: "auto", textAlign: "left" }}
-        >
-          {description}
-        </Typography>
+        <>
+          <Typography
+            variant="body1"
+            sx={{ flexGrow: 1, overflowY: "auto", textAlign: "left" }}
+          >
+            {description}
+          </Typography>
+          {priority && (
+            <Chip
+              label={priority}
+              variant="outlined"
+              sx={{ mx: 1, ...getPriorityChipColor(priority) }}
+            />
+          )}
+        </>
       )}
-      {priority && (
+      {/* {priority && (
         <Chip
           label={priority}
           variant="outlined"
           sx={{ mx: 1, ...getPriorityChipColor(priority) }}
         />
-      )}
+      )} */}
       {dueDate && (
         <Chip
           label={dueDate}

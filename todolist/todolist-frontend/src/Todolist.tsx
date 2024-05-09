@@ -299,10 +299,43 @@ export default function TodolistContainer({
     sortCriterion
   );
 
+  // const handleTodoEdit = (
+  //   todoId: string,
+  //   newDescription: string,
+  //   newStatus: string
+  // ) => {
+  //   // If the new status is "pending," update the pendingTodos list
+  //   if (newStatus === "pending") {
+  //     // Remove the todo from the completed list if it was completed
+  //     setCompletedTodos((todos) => todos.filter((todo) => todo.id !== todoId));
+
+  //     // Add or update the todo in the pendingTodos list
+  //     setPendingTodos((todos) =>
+  //       todos.map((todo) =>
+  //         todo.id === todoId
+  //           ? { ...todo, description: newDescription, status: newStatus }
+  //           : todo
+  //       )
+  //     );
+  //   } else {
+  //     // Remove the todo from the pending list if it was pending
+  //     setPendingTodos((todos) => todos.filter((todo) => todo.id !== todoId));
+
+  //     // Add or update the todo in the completedTodos list
+  //     setCompletedTodos((todos) =>
+  //       todos.map((todo) =>
+  //         todo.id === todoId
+  //           ? { ...todo, description: newDescription, status: newStatus }
+  //           : todo
+  //       )
+  //     );
+  //   }
+  // };
   const handleTodoEdit = (
     todoId: string,
     newDescription: string,
-    newStatus: string
+    newStatus: string,
+    newPriority: string
   ) => {
     // If the new status is "pending," update the pendingTodos list
     if (newStatus === "pending") {
@@ -313,7 +346,12 @@ export default function TodolistContainer({
       setPendingTodos((todos) =>
         todos.map((todo) =>
           todo.id === todoId
-            ? { ...todo, description: newDescription, status: newStatus }
+            ? {
+                ...todo,
+                description: newDescription,
+                status: newStatus,
+                priority: newPriority,
+              }
             : todo
         )
       );
@@ -325,7 +363,12 @@ export default function TodolistContainer({
       setCompletedTodos((todos) =>
         todos.map((todo) =>
           todo.id === todoId
-            ? { ...todo, description: newDescription, status: newStatus }
+            ? {
+                ...todo,
+                description: newDescription,
+                status: newStatus,
+                priority: newPriority,
+              }
             : todo
         )
       );
@@ -495,8 +538,13 @@ export default function TodolistContainer({
                 dueDate={todo.due_date}
                 todoId={todo.id}
                 onDelete={handleTodoDelete}
-                onEdit={(newDescription, newStatus) =>
-                  handleTodoEdit(todo.id, newDescription, newStatus)
+                onEdit={(newDescription, newStatus, newPriority) =>
+                  handleTodoEdit(
+                    todo.id,
+                    newDescription,
+                    newStatus,
+                    newPriority
+                  )
                 }
                 onToggleStatus={handleStatusToggle}
                 showToast={showToast}
