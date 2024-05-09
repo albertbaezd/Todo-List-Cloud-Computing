@@ -31,7 +31,8 @@ interface TodoStripProps {
   onEdit: (
     newDescription: string,
     newStatus: string,
-    newPriority: string
+    newPriority: string,
+    newDueDate: string
   ) => void;
   todoId: string;
   showToast: (message: string, severity: "success" | "error") => void;
@@ -56,6 +57,7 @@ const TodoStrip: React.FC<TodoStripProps> = ({
   const [isStatusModalOpen, setStatusModalOpen] = React.useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const [newPriority, setNewPriority] = React.useState(priority || "low");
+  const [newDueDate, setNewDueDate] = React.useState(dueDate || "");
 
   // Open the status confirmation modal
   const handleStatusModalOpen = () => {
@@ -89,11 +91,11 @@ const TodoStrip: React.FC<TodoStripProps> = ({
         const newStatus = checked ? "completed" : "pending";
         const updatedTodo = {
           description: newDescription,
-          added_date: new Date().toISOString().split("T")[0], // Assuming today is the added date
-          due_date: dueDate,
+          added_date: new Date().toISOString().split("T")[0], // Today's date
+          due_date: newDueDate, // Use the updated due date
           status: newStatus,
-          priority: newPriority || "low", // Ensure priority is set or default to "low"
-          user_id: user_id, // Adjust accordingly to include the relevant user ID
+          priority: newPriority || "low",
+          user_id: user_id,
         };
 
         // Make a PUT request to update the todo
@@ -104,7 +106,7 @@ const TodoStrip: React.FC<TodoStripProps> = ({
 
         if (response.status === 200) {
           showToast("Todo updated successfully!", "success");
-          onEdit(newDescription, newStatus, newPriority); // Trigger any additional edit handling logic if needed
+          onEdit(newDescription, newStatus, newPriority, newDueDate); // Trigger any additional edit handling logic if needed
         } else {
           showToast("Error updating todo. Please try again.", "error");
         }
@@ -189,6 +191,10 @@ const TodoStrip: React.FC<TodoStripProps> = ({
     setNewPriority(event.target.value); // event.target.value is already a string
   };
 
+  const handleDueDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewDueDate(event.target.value);
+  };
+
   return (
     <Box
       sx={{
@@ -225,6 +231,14 @@ const TodoStrip: React.FC<TodoStripProps> = ({
             <MenuItem value="medium">Medium</MenuItem>
             <MenuItem value="high">High</MenuItem>
           </Select>
+          <TextField
+            type="date"
+            label="Due Date"
+            value={newDueDate}
+            onChange={handleDueDateChange}
+            variant="outlined"
+            sx={{ mx: 1 }}
+          />
         </>
       ) : (
         <>
@@ -241,6 +255,14 @@ const TodoStrip: React.FC<TodoStripProps> = ({
               sx={{ mx: 1, ...getPriorityChipColor(priority) }}
             />
           )}
+          {dueDate && (
+            <Chip
+              label={dueDate}
+              variant="outlined"
+              color="warning"
+              sx={{ mx: 1 }}
+            />
+          )}
         </>
       )}
       {/* {priority && (
@@ -250,14 +272,14 @@ const TodoStrip: React.FC<TodoStripProps> = ({
           sx={{ mx: 1, ...getPriorityChipColor(priority) }}
         />
       )} */}
-      {dueDate && (
+      {/* {dueDate && (
         <Chip
           label={dueDate}
           variant="outlined"
           color="warning"
           sx={{ mx: 1 }}
         />
-      )}
+      )} */}
       {/* Checkbox IconButton */}
       <IconButton onClick={handleStatusModalOpen} sx={{ mx: 1 }}>
         <Checkbox

@@ -18,6 +18,7 @@ import axios from "axios";
 import Navbar from "./components/Navbar.tsx";
 import TodoStrip from "./components/TodoStrip.tsx";
 import StatusBar from "./components/StatusBar.tsx";
+import { dualipa } from "./constants/constants.ts";
 
 type Todo = {
   id: string;
@@ -335,7 +336,8 @@ export default function TodolistContainer({
     todoId: string,
     newDescription: string,
     newStatus: string,
-    newPriority: string
+    newPriority: string,
+    newDueDate: string
   ) => {
     // If the new status is "pending," update the pendingTodos list
     if (newStatus === "pending") {
@@ -351,6 +353,7 @@ export default function TodolistContainer({
                 description: newDescription,
                 status: newStatus,
                 priority: newPriority,
+                due_date: newDueDate,
               }
             : todo
         )
@@ -368,6 +371,7 @@ export default function TodolistContainer({
                 description: newDescription,
                 status: newStatus,
                 priority: newPriority,
+                due_date: newDueDate,
               }
             : todo
         )
@@ -400,6 +404,7 @@ export default function TodolistContainer({
           }}
         >
           <Navbar username={username} />
+          {/* <img src={`data:image/jpeg;base64,${dualipa}`} /> */}
           <Box
             component="form"
             onSubmit={handleSubmit}
@@ -538,12 +543,13 @@ export default function TodolistContainer({
                 dueDate={todo.due_date}
                 todoId={todo.id}
                 onDelete={handleTodoDelete}
-                onEdit={(newDescription, newStatus, newPriority) =>
+                onEdit={(newDescription, newStatus, newPriority, newDueDate) =>
                   handleTodoEdit(
                     todo.id,
                     newDescription,
                     newStatus,
-                    newPriority
+                    newPriority,
+                    newDueDate
                   )
                 }
                 onToggleStatus={handleStatusToggle}
