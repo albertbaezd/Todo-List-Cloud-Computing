@@ -12,6 +12,7 @@ import {
   Snackbar,
   Alert,
   SnackbarCloseReason,
+  SelectChangeEvent,
 } from "@mui/material";
 import axios from "axios";
 import Navbar from "./components/Navbar.tsx";
@@ -32,62 +33,61 @@ interface TodolistContainerProps {
   username: string;
 }
 
+const dummyTodos: Todo[] = [
+  {
+    id: "1",
+    description: "First Todo",
+    added_date: "2024-12-31",
+    due_date: "2024-12-31",
+    status: "pending",
+    priority: "low",
+  },
+  {
+    id: "2",
+    description: "Second Todo",
+    added_date: "2024-12-31",
+    due_date: "2024-12-31",
+    status: "pending",
+    priority: "low",
+  },
+  {
+    id: "3",
+    description: "Third Todo",
+    added_date: "2024-12-31",
+    due_date: "2024-12-31",
+    status: "pending",
+    priority: "low",
+  },
+  {
+    id: "4",
+    description: "Compl 1 Todo",
+    added_date: "2024-12-31",
+    due_date: "2024-12-31",
+    status: "completed",
+    priority: "low",
+  },
+  {
+    id: "5",
+    description: "Compl 2 Todo",
+    added_date: "2024-12-31",
+    due_date: "2024-12-31",
+    status: "completed",
+    priority: "low",
+  },
+  {
+    id: "6",
+    description: "Compl 3 Todo",
+    added_date: "2024-12-31",
+    due_date: "2024-12-31",
+    status: "completed",
+    priority: "low",
+  },
+];
+
 export default function TodolistContainer({
   user_id,
   username,
 }: TodolistContainerProps) {
-  // Dummy JSON data
-  const dummyTodos: Todo[] = [
-    {
-      id: "1",
-      description: "First Todo",
-      added_date: "2024-12-31",
-      due_date: "2024-12-31",
-      status: "pending",
-      priority: "low",
-    },
-    {
-      id: "2",
-      description: "Second Todo",
-      added_date: "2024-12-31",
-      due_date: "2024-12-31",
-      status: "pending",
-      priority: "low",
-    },
-    {
-      id: "3",
-      description: "Third Todo",
-      added_date: "2024-12-31",
-      due_date: "2024-12-31",
-      status: "pending",
-      priority: "low",
-    },
-    {
-      id: "4",
-      description: "Compl 1 Todo",
-      added_date: "2024-12-31",
-      due_date: "2024-12-31",
-      status: "completed",
-      priority: "low",
-    },
-    {
-      id: "5",
-      description: "Compl 2 Todo",
-      added_date: "2024-12-31",
-      due_date: "2024-12-31",
-      status: "completed",
-      priority: "low",
-    },
-    {
-      id: "6",
-      description: "Compl 3 Todo",
-      added_date: "2024-12-31",
-      due_date: "2024-12-31",
-      status: "completed",
-      priority: "low",
-    },
-  ];
-
   // Initialize states with dummy data
   const [pendingTodos, setPendingTodos] = React.useState<Todo[]>(
     dummyTodos.filter((todo) => todo.status === "pending")
@@ -103,30 +103,7 @@ export default function TodolistContainer({
     severity: "success" as "success" | "error",
   });
 
-  // // Handler to update a todo's status
-  // const handleStatusToggle = (todoId: string, newStatus: string) => {
-  //   // Update the corresponding todo status
-  //   const updateList = (todos: Todo[], status: string) =>
-  //     todos.map((todo) =>
-  //       todo.id === todoId ? { ...todo, status: newStatus } : todo
-  //     );
-
-  //   if (newStatus === "completed") {
-  //     // Move to the completed list
-  //     setPendingTodos((todos) => todos.filter((todo) => todo.id !== todoId));
-  //     setCompletedTodos((todos) => [
-  //       ...todos,
-  //       ...pendingTodos.filter((todo) => todo.id === todoId),
-  //     ]);
-  //   } else {
-  //     // Move to the pending list
-  //     setCompletedTodos((todos) => todos.filter((todo) => todo.id !== todoId));
-  //     setPendingTodos((todos) => [
-  //       ...todos,
-  //       ...completedTodos.filter((todo) => todo.id === todoId),
-  //     ]);
-  //   }
-  // };
+  const [sortCriterion, setSortCriterion] = React.useState("added-date"); // Initialize to default sorting criterion
 
   // Handler to update a todo's status
   const handleStatusToggle = (todoId: string, newStatus: string) => {
@@ -209,6 +186,28 @@ export default function TodolistContainer({
   const handleAlertClose = (event: React.SyntheticEvent<Element, Event>) => {
     setToast((prev) => ({ ...prev, open: false }));
   };
+
+  const sortTodos = (todos: Todo[], criterion: string) => {
+    return todos.sort((a, b) => {
+      const dateA = new Date(
+        criterion === "added-date" ? a.added_date : a.due_date
+      );
+      const dateB = new Date(
+        criterion === "added-date" ? b.added_date : b.due_date
+      );
+      return dateA < dateB ? -1 : 1;
+    });
+  };
+
+  const handleSortChange = (e: SelectChangeEvent) => {
+    const value = e.target.value as string;
+    setSortCriterion(value);
+  };
+
+  const sortedTodos = sortTodos(
+    activeFilter ? completedTodos : pendingTodos,
+    sortCriterion
+  );
 
   return (
     <React.Fragment>
@@ -308,7 +307,8 @@ export default function TodolistContainer({
                     label="Sort"
                     id="sort"
                     variant="outlined"
-                    defaultValue="added-date"
+                    value={sortCriterion}
+                    onChange={handleSortChange}
                     sx={{ width: "100%" }}
                   >
                     <MenuItem value="added-date">Added date</MenuItem>
@@ -333,7 +333,21 @@ export default function TodolistContainer({
               activeFilter={activeFilter}
               onFilterChange={handleFilterChange}
             />
-            {(activeFilter ? completedTodos : pendingTodos).map((todo) => (
+            {/* {(activeFilter ? completedTodos : pendingTodos).map((todo) => (
+              <TodoStrip
+                key={todo.id}
+                description={todo.description}
+                priority={todo.priority}
+                status={todo.status}
+                dueDate={todo.due_date}
+                todoId={todo.id}
+                onDelete={() => {}}
+                onEdit={() => {}}
+                onToggleStatus={handleStatusToggle}
+                showToast={showToast}
+              />
+            ))} */}
+            {sortedTodos.map((todo) => (
               <TodoStrip
                 key={todo.id}
                 description={todo.description}
