@@ -9,6 +9,9 @@ import {
   Select,
   TextField,
   InputLabel,
+  Snackbar,
+  Alert,
+  SnackbarCloseReason,
 } from "@mui/material";
 import axios from "axios";
 import Navbar from "./components/Navbar.tsx";
@@ -94,6 +97,12 @@ export default function TodolistContainer({
   );
   const [activeFilter, setActiveFilter] = React.useState(false);
 
+  const [toast, setToast] = React.useState({
+    open: false,
+    message: "",
+    severity: "success" as "success" | "error",
+  });
+
   // // Handler to update a todo's status
   // const handleStatusToggle = (todoId: string, newStatus: string) => {
   //   // Update the corresponding todo status
@@ -175,6 +184,24 @@ export default function TodolistContainer({
 
   const handleFilterChange = (filter: boolean) => {
     setActiveFilter(filter);
+  };
+
+  // Show the toast message
+  const showToast = (message: string, severity: "success" | "error") => {
+    setToast({ open: true, message, severity });
+  };
+
+  // Close the toast
+  const handleCloseToast = (
+    event: Event | React.SyntheticEvent<any, Event>,
+    reason: SnackbarCloseReason
+  ) => {
+    if (reason === "clickaway") return;
+    setToast((prev) => ({ ...prev, open: false }));
+  };
+
+  const handleAlertClose = (event: React.SyntheticEvent<Element, Event>) => {
+    setToast((prev) => ({ ...prev, open: false }));
   };
 
   return (
@@ -310,12 +337,22 @@ export default function TodolistContainer({
                 onDelete={() => {}}
                 onEdit={() => {}}
                 onToggleStatus={handleStatusToggle}
-                // dueDate={todo.due_date.toISOString().split("T")[0]}
+                showToast={showToast}
               />
             ))}
           </Box>
         </Box>
       </Container>
+      {/* Snackbar Toast */}
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={6000}
+        onClose={handleCloseToast}
+      >
+        <Alert onClose={handleAlertClose} severity={toast.severity}>
+          {toast.message}
+        </Alert>
+      </Snackbar>
     </React.Fragment>
   );
 }

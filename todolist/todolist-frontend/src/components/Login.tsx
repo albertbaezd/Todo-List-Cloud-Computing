@@ -1,13 +1,15 @@
 import React, { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Box, Button, TextField, Typography, Alert } from "@mui/material";
+import logoSrc from "../todo-logo-black.png"; // Adjust the path as needed
 
 interface LoginPageProps {
   username: string;
   password: string;
   onUsernameChange: (username: string) => void;
   onPasswordChange: (password: string) => void;
-  onUserIdChange: (password: string) => void;
+  onUserIdChange: (userId: string) => void;
 }
 
 function LoginPage({
@@ -42,29 +44,69 @@ function LoginPage({
   };
 
   return (
-    <div>
-      <h2>Login Page</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          <label>Username:</label>
-          <input
-            type="text"
+    <Box
+      sx={{
+        backgroundColor: "white",
+        marginTop: "30%",
+        width: "70%",
+        margin: "auto",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 2,
+        p: 3,
+        border: "1px solid #ddd",
+        borderRadius: "8px",
+        boxShadow: "2px 2px 10px rgba(0,0,0,0.1)",
+        mt: 4,
+      }}
+    >
+      <img
+        src={logoSrc}
+        alt="Logo"
+        style={{ height: "40px", marginRight: "16px" }}
+      />
+      <Typography
+        variant="h4"
+        component="h2"
+        gutterBottom
+        sx={{ color: "black" }}
+      >
+        Welcome!
+      </Typography>
+      <form onSubmit={handleLogin} style={{ width: "100%" }}>
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            fullWidth
+            label="Username"
+            variant="outlined"
             value={username}
             onChange={(e) => onUsernameChange(e.target.value)}
+            sx={{}}
           />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
+        </Box>
+        <Box sx={{ mb: 2 }}>
+          <TextField
+            fullWidth
             type="password"
+            label="Password"
+            variant="outlined"
             value={password}
             onChange={(e) => onPasswordChange(e.target.value)}
           />
-        </div>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type="submit">Login</button>
+        </Box>
+        {error && <Alert severity="error">{error}</Alert>}
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          sx={{ marginY: "20px" }}
+        >
+          Login
+        </Button>
       </form>
-    </div>
+    </Box>
   );
 }
 

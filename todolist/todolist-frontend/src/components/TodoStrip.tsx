@@ -27,6 +27,7 @@ interface TodoStripProps {
   onToggleStatus: (todoId: string, newStatus: string) => void;
   onEdit: (newDescription: string) => void;
   todoId: string;
+  showToast: (message: string, severity: "success" | "error") => void;
 }
 
 const TodoStrip: React.FC<TodoStripProps> = ({
@@ -38,6 +39,7 @@ const TodoStrip: React.FC<TodoStripProps> = ({
   todoId,
   status,
   onToggleStatus,
+  showToast,
 }) => {
   const [editMode, setEditMode] = React.useState(false);
   const [newDescription, setNewDescription] = React.useState(description);
@@ -82,8 +84,10 @@ const TodoStrip: React.FC<TodoStripProps> = ({
       onToggleStatus(todoId, newStatus);
       setChecked(!checked);
       handleModalClose();
+      showToast("Status updated successfully!", "success");
       console.log(response.data.message); // Log success message
     } catch (error) {
+      showToast("Error updating status. Please try again.", "error");
       console.error(
         "Error updating todo status:",
         error.response?.data || error.message
