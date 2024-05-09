@@ -5,7 +5,7 @@ import {
   Typography,
   Button,
   Avatar,
-  Modal,
+  Popover,
   Box,
   Link,
 } from "@mui/material";
@@ -17,16 +17,22 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ username }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const navigate = useNavigate();
 
-  // Toggle modal visibility
-  const handleModalOpen = () => setIsModalOpen(true);
-  const handleModalClose = () => setIsModalOpen(false);
+  // Open the popover
+  const handlePopoverOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-  // Handle logout by closing the modal and redirecting to /login
+  // Close the popover
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+  // Handle logout by closing the popover and redirecting to /login
   const handleLogout = () => {
-    handleModalClose();
+    handlePopoverClose();
     navigate("/login");
   };
 
@@ -50,46 +56,50 @@ const Navbar: React.FC<NavbarProps> = ({ username }) => {
           <Button
             color="inherit"
             startIcon={<Avatar />}
-            onClick={handleModalOpen}
+            onClick={handlePopoverOpen}
           >
             Account
           </Button>
         </Toolbar>
       </AppBar>
 
-      {/* Account Modal */}
-      <Modal open={isModalOpen} onClose={handleModalClose}>
+      {/* Popover */}
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={handlePopoverClose}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+      >
         <Box
           sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: 300,
-            bgcolor: "background.paper",
-            border: "1px solid #ddd",
-            borderRadius: "8px",
-            boxShadow: 24,
-            p: 4,
+            p: 2,
+            width: 200,
             textAlign: "center",
           }}
         >
           <Typography variant="h6" gutterBottom>
             Welcome, {username}!
           </Typography>
-          <Typography variant="body1" sx={{ mt: 2, color: "gray" }}>
+          <Typography variant="body1" sx={{ mt: 1 }}>
             Oh, are you not {username}?{" "}
-            <Link
-              component="button"
-              variant="body1"
-              onClick={handleLogout}
-              sx={{ color: "blue", cursor: "pointer" }}
-            >
-              Logout
-            </Link>
           </Typography>
+          <Link
+            component="button"
+            variant="body1"
+            onClick={handleLogout}
+            sx={{ color: "blue", cursor: "pointer", marginTop: "10px" }}
+          >
+            Logout
+          </Link>
         </Box>
-      </Modal>
+      </Popover>
     </>
   );
 };
