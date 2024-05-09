@@ -94,6 +94,55 @@ export default function TodolistContainer({
   );
   const [activeFilter, setActiveFilter] = React.useState(false);
 
+  // // Handler to update a todo's status
+  // const handleStatusToggle = (todoId: string, newStatus: string) => {
+  //   // Update the corresponding todo status
+  //   const updateList = (todos: Todo[], status: string) =>
+  //     todos.map((todo) =>
+  //       todo.id === todoId ? { ...todo, status: newStatus } : todo
+  //     );
+
+  //   if (newStatus === "completed") {
+  //     // Move to the completed list
+  //     setPendingTodos((todos) => todos.filter((todo) => todo.id !== todoId));
+  //     setCompletedTodos((todos) => [
+  //       ...todos,
+  //       ...pendingTodos.filter((todo) => todo.id === todoId),
+  //     ]);
+  //   } else {
+  //     // Move to the pending list
+  //     setCompletedTodos((todos) => todos.filter((todo) => todo.id !== todoId));
+  //     setPendingTodos((todos) => [
+  //       ...todos,
+  //       ...completedTodos.filter((todo) => todo.id === todoId),
+  //     ]);
+  //   }
+  // };
+
+  // Handler to update a todo's status
+  const handleStatusToggle = (todoId: string, newStatus: string) => {
+    // Move the todo to the correct list based on the new status
+    if (newStatus === "completed") {
+      // Remove from pending and add to completed
+      setPendingTodos((todos) => todos.filter((todo) => todo.id !== todoId));
+      setCompletedTodos((todos) => [
+        ...todos,
+        ...pendingTodos
+          .filter((todo) => todo.id === todoId)
+          .map((todo) => ({ ...todo, status: "completed" })),
+      ]);
+    } else {
+      // Remove from completed and add to pending
+      setCompletedTodos((todos) => todos.filter((todo) => todo.id !== todoId));
+      setPendingTodos((todos) => [
+        ...todos,
+        ...completedTodos
+          .filter((todo) => todo.id === todoId)
+          .map((todo) => ({ ...todo, status: "pending" })),
+      ]);
+    }
+  };
+
   React.useEffect(() => {
     const fetchTodos = async () => {
       try {
@@ -255,10 +304,13 @@ export default function TodolistContainer({
                 key={todo.id}
                 description={todo.description}
                 priority={todo.priority}
+                status={todo.status}
+                dueDate={todo.due_date}
+                todoId={todo.id}
                 onDelete={() => {}}
                 onEdit={() => {}}
+                onToggleStatus={handleStatusToggle}
                 // dueDate={todo.due_date.toISOString().split("T")[0]}
-                dueDate={todo.due_date}
               />
             ))}
           </Box>

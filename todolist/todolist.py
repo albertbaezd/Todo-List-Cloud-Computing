@@ -177,18 +177,19 @@ def delete_todo(todo_id):
 def update_todo_status(todo_id):
     data = request.json
     new_status = data.get('status')
-    user_id = data.get('user_id')
 
     if new_status not in ['completed', 'pending']:
         return jsonify({"error": "Invalid status. Allowed values: 'completed', 'pending'"}), 400
 
     db = get_db()
-    cursor = db.execute('SELECT id FROM Todo WHERE id = ? AND user_id = ?', (todo_id, user_id))
+    # Fetch the todo by ID only
+    cursor = db.execute('SELECT id FROM Todo WHERE id = ?', (todo_id,))
     if cursor.fetchone():
-        db.execute('UPDATE Todo SET status = ? WHERE id = ? AND user_id = ?', (new_status, todo_id, user_id))
+        # Update the status for the found todo
+        db.execute('UPDATE Todo SET status = ? WHERE id = ?', (new_status, todo_id))
         db.commit()
         return jsonify({"message": f"Todo status updated to {new_status}"})
-    return jsonify({"error": "Todo not found or unauthorized action"}), 404
+    return jsonify({"error": "Todo not found"}), 404
 
 # User Registration Endpoint
 @app.route('/api/register', methods=['POST'])
