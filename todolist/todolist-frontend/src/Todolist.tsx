@@ -1,4 +1,6 @@
 import * as React from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import CssBaseline from "@mui/material/CssBaseline";
 import Container from "@mui/material/Container";
 import {
@@ -18,7 +20,7 @@ import axios from "axios";
 import Navbar from "./components/Navbar.tsx";
 import TodoStrip from "./components/TodoStrip.tsx";
 import StatusBar from "./components/StatusBar.tsx";
-import { dualipa } from "./constants/constants.ts";
+// import { dualipa } from "./constants/constants.ts";
 
 type Todo = {
   id: string;
@@ -85,11 +87,40 @@ const dummyTodos: Todo[] = [
   },
 ];
 
+// const validationSchema = Yup.object({
+//   description: Yup.string()
+//     .max(255, "Description should not exceed 255 characters")
+//     .required("Description is required"),
+//   date: Yup.date().required("Date is required"),
+//   priority: Yup.string()
+//     .oneOf(["low", "medium", "high"], "Invalid priority")
+//     .required("Priority is required"),
+// });
+
+const validationSchema = Yup.object({
+  description: Yup.string()
+    .max(25, "Description should not exceed 25 characters")
+    .required("Description is required"),
+  date: Yup.date()
+    .transform((value, originalValue) =>
+      originalValue ? new Date(originalValue) : null
+    ) // Ensure proper conversion to a JavaScript Date object
+    .min(
+      new Date().setHours(0, 0, 0, 0), // Today's date starting at midnight
+      "Date must be today or a future date"
+    )
+    .required("Date is required"),
+  priority: Yup.string()
+    .oneOf(["low", "medium", "high"], "Invalid priority")
+    .required("Priority is required"),
+});
+
 export default function TodolistContainer({
   user_id,
   username,
 }: TodolistContainerProps) {
   // Initialize states with dummy data
+
   const [pendingTodos, setPendingTodos] = React.useState<Todo[]>(
     dummyTodos.filter((todo) => todo.status === "pending")
   );
@@ -105,10 +136,6 @@ export default function TodolistContainer({
   });
 
   const [sortCriterion, setSortCriterion] = React.useState("added-date"); // Initialize to default sorting criterion
-
-  const [description, setDescription] = React.useState("");
-  const [date, setDate] = React.useState("");
-  const [priority, setPriority] = React.useState("low");
 
   // Handler to update a todo's status
   const handleStatusToggle = (todoId: string, newStatus: string) => {
@@ -157,7 +184,7 @@ export default function TodolistContainer({
     };
 
     fetchTodos(); // Call the async function inside `useEffect`
-  }, []); // Empty dependency array ensures this runs once when the component mounts
+  }, [user_id]); // Empty dependency array ensures this runs once when the component mounts
 
   // const handleSubmit = async (e: React.FormEvent) => {
   //   e.preventDefault();
@@ -188,22 +215,86 @@ export default function TodolistContainer({
   //   }
   // };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
 
+  //   try {
+  //     // Ensure added_date and due_date are formatted properly
+  //     const currentDate = new Date().toISOString().split("T")[0]; // Today's date in ISO format
+  //     const formattedDueDate = date
+  //       ? new Date(date).toISOString().split("T")[0]
+  //       : null; // Convert date string to ISO
+
+  //     const newTodoRequest = {
+  //       description,
+  //       added_date: currentDate, // Current date
+  //       due_date: formattedDueDate, // Due date from the form
+  //       status: "pending", // Default status for new todos
+  //       priority,
+  //       user_id, // Assuming this variable holds the current user ID
+  //     };
+
+  //     // Send the request to create a new todo
+  //     const response = await axios.post(
+  //       `${process.env.REACT_APP_API_BASE_URL}/api/todos`,
+  //       newTodoRequest
+  //     );
+
+  //     if (response.status === 201) {
+  //       const newTodoResponse = response.data; // Ensure your API returns the newly created todo
+
+  //       // Convert backend response to match the frontend Todo type
+  //       const newTodo: Todo = {
+  //         id: newTodoResponse.id, // Ensure the backend returns an `id` field
+  //         description: newTodoResponse.description,
+  //         added_date: newTodoResponse.added_date,
+  //         due_date: newTodoResponse.due_date || "", // Ensure an empty string if `due_date` is null
+  //         status: newTodoResponse.status, // Adjust to "completed" or "pending"
+  //         priority: newTodoResponse.priority,
+  //       };
+
+  //       // Update the appropriate state list
+  //       if (newTodo.status === "pending") {
+  //         setPendingTodos((prev) => [...prev, newTodo]);
+  //       } else {
+  //         setCompletedTodos((prev) => [...prev, newTodo]);
+  //       }
+
+  //       // Optionally clear the form fields
+  //       setDescription("");
+  //       setDate("");
+  //       setPriority("low");
+
+  //       showToast("Todo created successfully!", "success");
+  //     } else {
+  //       showToast("Failed to create todo.", "error");
+  //     }
+  //   } catch (error) {
+  //     showToast(
+  //       "Error creating todo: " + (error.response?.data.error || error.message),
+  //       "error"
+  //     );
+  //   }
+  // };
+
+  const handleSubmit = async (values: {
+    description: string;
+    date: string;
+    priority: string;
+  }) => {
     try {
       // Ensure added_date and due_date are formatted properly
       const currentDate = new Date().toISOString().split("T")[0]; // Today's date in ISO format
-      const formattedDueDate = date
-        ? new Date(date).toISOString().split("T")[0]
+      const formattedDueDate = values.date
+        ? new Date(values.date).toISOString().split("T")[0]
         : null; // Convert date string to ISO
 
       const newTodoRequest = {
-        description,
+        description: values.description,
         added_date: currentDate, // Current date
         due_date: formattedDueDate, // Due date from the form
         status: "pending", // Default status for new todos
-        priority,
+        priority: values.priority,
         user_id, // Assuming this variable holds the current user ID
       };
 
@@ -234,9 +325,7 @@ export default function TodolistContainer({
         }
 
         // Optionally clear the form fields
-        setDescription("");
-        setDate("");
-        setPriority("low");
+        formik.resetForm(); // Resets form fields to initial values
 
         showToast("Todo created successfully!", "success");
       } else {
@@ -390,6 +479,21 @@ export default function TodolistContainer({
     }
   };
 
+  const formik = useFormik({
+    initialValues: {
+      description: "",
+      date: "",
+      priority: "low",
+    },
+    validationSchema,
+    onSubmit: handleSubmit,
+    // validationSchema: Yup.object({
+    //   description: Yup.string().required('Description is required'),
+    //   date: Yup.string().required('Date is required'),
+    //   priority: Yup.string().required('Priority is required'),
+    // }),
+  });
+
   return (
     <React.Fragment>
       <CssBaseline />
@@ -407,7 +511,8 @@ export default function TodolistContainer({
           {/* <img src={`data:image/jpeg;base64,${dualipa}`} /> */}
           <Box
             component="form"
-            onSubmit={handleSubmit}
+            // onSubmit={handleSubmit}
+            onSubmit={formik.handleSubmit}
             sx={{
               bgcolor: "white",
               padding: "24px",
@@ -420,22 +525,37 @@ export default function TodolistContainer({
             }}
           >
             <TextField
-              id="outlined-textarea"
+              id="description"
               label="Description"
+              name="description"
               multiline
               rows={4}
               variant="outlined"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={formik.values.description}
+              onBlur={formik.handleBlur}
+              error={
+                formik.touched.description && Boolean(formik.errors.description)
+              }
+              // onChange={(e) => setDescription(e.target.value)}
+              onChange={formik.handleChange}
+              helperText={
+                formik.touched.description && formik.errors.description
+              }
               sx={{ mb: 2 }}
             />
             <TextField
               id="date"
               label="Date"
               type="date"
+              name="date"
               InputLabelProps={{ shrink: true }}
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
+              // value={date}
+              value={formik.values.date}
+              // onChange={(e) => setDate(e.target.value)}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.date && Boolean(formik.errors.date)}
+              helperText={formik.touched.date && formik.errors.date}
               sx={{ mb: 2 }}
             />
             <InputLabel htmlFor="priority" sx={{ mt: 2, mb: 1 }}>
@@ -444,15 +564,24 @@ export default function TodolistContainer({
             <Select
               label="Priority"
               id="priority"
+              name="priority"
               variant="outlined"
-              value={priority}
-              onChange={(e) => setPriority(e.target.value as string)}
+              // value={priority}
+              value={formik.values.priority}
+              // onChange={(e) => setPriority(e.target.value as string)}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.priority && Boolean(formik.errors.priority)}
               sx={{ mb: 2 }}
             >
               <MenuItem value="low">Low Priority</MenuItem>
               <MenuItem value="medium">Medium Priority</MenuItem>
               <MenuItem value="high">High Priority</MenuItem>
             </Select>
+            {formik.touched.priority && formik.errors.priority && (
+              <div style={{ color: "red" }}>{formik.errors.priority}</div>
+            )}
+
             <Button
               type="submit"
               variant="contained"
