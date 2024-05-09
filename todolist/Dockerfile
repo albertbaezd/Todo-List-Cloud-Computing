@@ -10,8 +10,14 @@ COPY requirements.txt ./
 # Install any needed dependencies specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code to the working directory
-COPY . .
+# # Copy the rest of the application code to the working directory
+# COPY . .
+
+# Copy the Python files and SQLite database
+COPY todolist.py todolist.db ./
+
+# Copy the build folder from todolist-frontend
+COPY todolist-frontend/build ./build
 
 # Expose port 80 to the outside world - Optional
 # EXPOSE 80

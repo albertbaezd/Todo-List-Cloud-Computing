@@ -13,13 +13,13 @@ spec:
         app: todolist
     spec:
       containers:
-      - name: my-container
-        image: djninjatv/todolist:v1.4 # V1.4 added - architecture AMD64, modified url
-        ports:
-        - containerPort: 80
-        env:
-        - name: API_URL
-          value: "34.123.254.209"
+        - name: my-container
+          image: djninjatv/todolist:v1.5 # V1.5 first deployment of react
+          ports:
+            - containerPort: 80
+          env:
+            - name: API_URL
+              value: "34.123.254.209"
 ---
 apiVersion: v1
 kind: Service
