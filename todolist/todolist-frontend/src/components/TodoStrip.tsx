@@ -12,6 +12,7 @@ import {
   Select,
   SelectChangeEvent,
   MenuItem,
+  useMediaQuery,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -212,17 +213,45 @@ const TodoStrip: React.FC<TodoStripProps> = ({
     .join(":"); // "HH:MM" format
   const endTime = endTimeObj.toTimeString().split(":").slice(0, 2).join(":");
 
+  // CSS responsive styles
+  const isSmallScreen = useMediaQuery("(max-width: 800px)");
+
+  const baseStyles = {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    padding: "20px",
+    borderBottom: "2px solid #ebe3e3",
+  };
+
+  const smallScreenStyles = isSmallScreen
+    ? {
+        flexWrap: "wrap",
+        "& > p:first-of-type": {
+          width: "100%", // Full width for the first child
+        },
+        "& > :nth-of-type(n+2)": {
+          display: "flex",
+          flexWrap: "wrap", // Wrap other children horizontally
+          gap: "5px", // Adjust spacing between children
+        },
+        "& > :nth-of-type(n+2) > *": {
+          flex: "1 1 20%", // 20% width for each remaining child
+          boxSizing: "border-box", // Make sure borders/margins are considered
+          minWidth: "100px", // Optional minimum width per child for better wrapping
+        },
+      }
+    : {};
+
+  const mergedStyles = {
+    ...baseStyles,
+    flexDirection: "row",
+    ...smallScreenStyles,
+  };
+
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        width: "100%",
-        padding: "20px",
-        borderBottom: "2px solid #ebe3e3",
-      }}
-    >
+    <Box sx={mergedStyles}>
       {editMode ? (
         <>
           <TextField
