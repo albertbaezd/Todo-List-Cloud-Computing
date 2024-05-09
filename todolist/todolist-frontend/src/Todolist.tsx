@@ -186,6 +186,12 @@ export default function TodolistContainer({
     setActiveFilter(filter);
   };
 
+  const handleFilterSelectChange = (value: string) => {
+    // Map string values to numeric states
+    const filterValue = value === "pending" ? false : true;
+    setActiveFilter(filterValue);
+  };
+
   // Show the toast message
   const showToast = (message: string, severity: "success" | "error") => {
     setToast({ open: true, message, severity });
@@ -285,6 +291,7 @@ export default function TodolistContainer({
                     id="filter"
                     variant="outlined"
                     defaultValue="pending"
+                    onChange={(e) => handleFilterSelectChange(e.target.value)}
                     sx={{ width: "100%" }}
                   >
                     <MenuItem value="pending">Pending</MenuItem>
