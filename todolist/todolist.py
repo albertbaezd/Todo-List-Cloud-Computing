@@ -27,7 +27,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # HW4
 @app.route("/")
-def show_list():
+def show_home():
     api_url = os.environ.get("API_URL")
     if not api_url:
         print("URL environment variable not set: API_URL")
@@ -39,7 +39,7 @@ def show_list():
     return render_template('index.html')
 
 @app.route("/todolist")
-def show_list():
+def show_todolist():
     api_url = os.environ.get("API_URL")
     if not api_url:
         print("URL environment variable not set: API_URL")
@@ -51,7 +51,7 @@ def show_list():
     return render_template('index.html')
 
 @app.route("/login")
-def show_list():
+def show_login():
     api_url = os.environ.get("API_URL")
     if not api_url:
         print("URL environment variable not set: API_URL")
@@ -284,6 +284,19 @@ def get_all_users():
     ]
     
     return jsonify(user_list)
+
+@app.route('/api/users/<int:user_id>', methods=['GET'])
+def get_user_by_id(user_id):
+    """Fetch the username for a given user ID."""
+    db = get_db()
+    cursor = db.execute('SELECT username FROM Users WHERE id = ?', (user_id,))
+    user = cursor.fetchone()
+
+    if user:
+        return jsonify({"user_id": user_id, "username": user[0]})
+    else:
+        return jsonify({"error": "User not found"}), 404
+
 
 
 @app.route('/api/login', methods=['POST'])

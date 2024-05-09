@@ -100,7 +100,7 @@ const dummyTodos: Todo[] = [
 
 const validationSchema = Yup.object({
   description: Yup.string()
-    .max(25, "Description should not exceed 25 characters")
+    .max(256, "Description should not exceed 256 characters")
     .required("Description is required"),
   date: Yup.date()
     .transform((value, originalValue) =>
@@ -129,7 +129,10 @@ export default function TodolistContainer({
   const [completedTodos, setCompletedTodos] = React.useState<Todo[]>(
     dummyTodos.filter((todo) => todo.status === "completed")
   );
+
   const [activeFilter, setActiveFilter] = React.useState(false);
+
+  const [username_url, setUserNameUrl] = React.useState(username || "");
 
   const [toast, setToast] = React.useState({
     open: false,
@@ -167,13 +170,14 @@ export default function TodolistContainer({
     const fetchTodos = async () => {
       try {
         // Replace this IP address with your actual URL later
-        const response = await axios.get(
+        const todosResponse = await axios.get(
           user_id
             ? `${process.env.REACT_APP_API_BASE_URL}/api/users/${user_id}/todos`
             : `${process.env.REACT_APP_API_BASE_URL}/api/users/${user_id_url}/todos`
         );
-        console.log(response.data);
-        const todos: Todo[] = response.data;
+        console.log(todosResponse.data);
+
+        const todos: Todo[] = todosResponse.data;
 
         // Separate pending and completed todos
         const pending = todos.filter((todo) => todo.status === "pending");
@@ -181,6 +185,14 @@ export default function TodolistContainer({
 
         setPendingTodos(pending);
         setCompletedTodos(completed);
+
+        // Fetch username by user ID
+        const userResponse = await axios.get(
+          user_id
+            ? `${process.env.REACT_APP_API_BASE_URL}/api/users/${user_id}`
+            : `${process.env.REACT_APP_API_BASE_URL}/api/users/${user_id_url}`
+        );
+        setUserNameUrl(userResponse.data.username);
       } catch (error) {
         console.error("Error fetching todos:", error);
         // Fallback to dummy JSON data (already set in state)
@@ -511,7 +523,7 @@ export default function TodolistContainer({
             padding: "5%",
           }}
         >
-          <Navbar username={username} />
+          <Navbar username={username || username_url} />
           {/* <img src={`data:image/jpeg;base64,${dualipa}`} /> */}
           <Box
             component="form"
