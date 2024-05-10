@@ -1,5 +1,4 @@
 #!/usr/local/bin/python
-# This is a simple example web app that is meant to illustrate the basics.
 from flask import Flask, render_template, redirect, g, request, url_for, jsonify
 import sqlite3
 import os
@@ -10,12 +9,10 @@ from flask_cors import CORS
 import re
 
 DATABASE = 'todolist.db'
+
 # Regular expression pattern to validate an email address
 email_pattern = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
 
-
-# app = Flask(__name__) default 
-# app = Flask(__name__, static_folder='/build', static_url_path='/')
 app = Flask(__name__, template_folder='build', static_folder='build', static_url_path='/')
 
 app.config.from_object(__name__)
@@ -32,10 +29,6 @@ def show_home():
     if not api_url:
         print("URL environment variable not set: API_URL")
         return 
-    # resp = requests.get(f"http://{api_url}/api/items")
-    # resp = resp.json()
-    # return render_template('index.html', todolist=resp)
-    # No need to make an initial fetch here
     return render_template('index.html')
 
 @app.route("/todolist")
@@ -44,10 +37,6 @@ def show_todolist():
     if not api_url:
         print("URL environment variable not set: API_URL")
         return 
-    # resp = requests.get(f"http://{api_url}/api/items")
-    # resp = resp.json()
-    # return render_template('index.html', todolist=resp)
-    # No need to make an initial fetch here
     return render_template('index.html')
 
 @app.route("/login")
@@ -56,10 +45,6 @@ def show_login():
     if not api_url:
         print("URL environment variable not set: API_URL")
         return 
-    # resp = requests.get(f"http://{api_url}/api/items")
-    # resp = resp.json()
-    # return render_template('index.html', todolist=resp)
-    # No need to make an initial fetch here
     return render_template('index.html')
 
 @app.route("/api/items")
@@ -171,8 +156,6 @@ def create_todo():
         "priority": priority,
         "user_id": data['user_id']
     }), 201
-
-
 
 # Update an existing todo item
 @app.route("/api/todos/<int:todo_id>", methods=['PUT'])
@@ -297,8 +280,6 @@ def get_user_by_id(user_id):
     else:
         return jsonify({"error": "User not found"}), 404
 
-
-
 @app.route('/api/login', methods=['POST'])
 def login_user():
     data = request.json
@@ -320,33 +301,6 @@ def login_user():
         "user_id": user[0],
         "username": user[1]
     }), 200
-
-
-# Old Methods
-# @app.route("/add", methods=['POST'])
-# def add_entry():
-#     db = get_db()
-#     db.execute('insert into entries (what_to_do, due_date) values (?, ?)',
-#                [request.form['what_to_do'], request.form['due_date']])
-#     db.commit()
-#     return redirect(url_for('show_list'))
-
-
-# @app.route("/delete/<item>")
-# def delete_entry(item):
-#     db = get_db()
-#     db.execute("DELETE FROM entries WHERE what_to_do='"+item+"'")
-#     db.commit()
-#     return redirect(url_for('show_list'))
-
-
-# @app.route("/mark/<item>")
-# def mark_as_done(item):
-#     db = get_db()
-#     db.execute("UPDATE entries SET status='done' WHERE what_to_do='"+item+"'")
-#     db.commit()
-#     return redirect(url_for('show_list'))
-
 
 def get_db():
     """Opens a new database connection if there is none yet for the

@@ -84,10 +84,6 @@ const TodoStrip: React.FC<TodoStripProps> = ({
   const handleEdit = async () => {
     // Toggle edit mode
     setEditMode(!editMode);
-    // If exiting edit mode, save the changes
-    // if (!editMode) {
-    //   onEdit(newDescription);
-    // }
     if (editMode) {
       try {
         const newStatus = checked ? "completed" : "pending";
@@ -132,7 +128,6 @@ const TodoStrip: React.FC<TodoStripProps> = ({
 
     try {
       // Make a PATCH request to update the todo status
-      // `${process.env.REACT_APP_API_BASE_URL}/api/todos/${todoId}/status`
       const response = await axios.patch(
         `${process.env.REACT_APP_API_BASE_URL}/api/todos/${todoId}/status`,
         {
@@ -329,22 +324,6 @@ const TodoStrip: React.FC<TodoStripProps> = ({
         hideCheckmark={true}
         size={"5|3|3"}
       ></AddToCalendarButton>
-      {/* {priority && (
-        <Chip
-          label={priority}
-          variant="outlined"
-          sx={{ mx: 1, ...getPriorityChipColor(priority) }}
-        />
-      )} */}
-      {/* {dueDate && (
-        <Chip
-          label={dueDate}
-          variant="outlined"
-          color="warning"
-          sx={{ mx: 1 }}
-        />
-      )} */}
-      {/* Checkbox IconButton */}
       <IconButton onClick={handleStatusModalOpen} sx={{ mx: 1 }}>
         <Checkbox
           checked={checked}

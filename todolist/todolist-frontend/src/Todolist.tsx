@@ -21,14 +21,13 @@ import axios from "axios";
 import Navbar from "./components/Navbar.tsx";
 import TodoStrip from "./components/TodoStrip.tsx";
 import StatusBar from "./components/StatusBar.tsx";
-// import { dualipa } from "./constants/constants.ts";
 
 type Todo = {
   id: string;
   description: string;
   added_date: string;
   due_date: string;
-  status: string; // `true` for completed, `false` for pending
+  status: string;
   priority: string;
 };
 
@@ -87,16 +86,6 @@ const dummyTodos: Todo[] = [
     priority: "low",
   },
 ];
-
-// const validationSchema = Yup.object({
-//   description: Yup.string()
-//     .max(255, "Description should not exceed 255 characters")
-//     .required("Description is required"),
-//   date: Yup.date().required("Date is required"),
-//   priority: Yup.string()
-//     .oneOf(["low", "medium", "high"], "Invalid priority")
-//     .required("Priority is required"),
-// });
 
 const validationSchema = Yup.object({
   description: Yup.string()
@@ -202,97 +191,6 @@ export default function TodolistContainer({
     fetchTodos(); // Call the async function inside `useEffect`
   }, [user_id, user_id_url]); // Empty dependency array ensures this runs once when the component mounts
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   try {
-  //     const response = await axios.post(
-  //       `${process.env.REACT_APP_API_BASE_URL}/api/todos`,
-  //       {
-  //         description,
-  //         added_date: new Date().toISOString().split("T")[0], // Get current date as added_date
-  //         due_date: date,
-  //         status: "pending",
-  //         priority,
-  //         user_id, // Ensure user_id is passed in the request
-  //       }
-  //     );
-
-  //     if (response.status === 201) {
-  //       showToast("Todo created successfully!", "success");
-  //       // Optionally, refresh the todos list or clear form inputs
-  //     } else {
-  //       showToast("Failed to create todo.", "error");
-  //     }
-  //   } catch (error) {
-  //     showToast(
-  //       "Error creating todo: " + (error.response?.data.error || error.message),
-  //       "error"
-  //     );
-  //   }
-  // };
-
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-
-  //   try {
-  //     // Ensure added_date and due_date are formatted properly
-  //     const currentDate = new Date().toISOString().split("T")[0]; // Today's date in ISO format
-  //     const formattedDueDate = date
-  //       ? new Date(date).toISOString().split("T")[0]
-  //       : null; // Convert date string to ISO
-
-  //     const newTodoRequest = {
-  //       description,
-  //       added_date: currentDate, // Current date
-  //       due_date: formattedDueDate, // Due date from the form
-  //       status: "pending", // Default status for new todos
-  //       priority,
-  //       user_id, // Assuming this variable holds the current user ID
-  //     };
-
-  //     // Send the request to create a new todo
-  //     const response = await axios.post(
-  //       `${process.env.REACT_APP_API_BASE_URL}/api/todos`,
-  //       newTodoRequest
-  //     );
-
-  //     if (response.status === 201) {
-  //       const newTodoResponse = response.data; // Ensure your API returns the newly created todo
-
-  //       // Convert backend response to match the frontend Todo type
-  //       const newTodo: Todo = {
-  //         id: newTodoResponse.id, // Ensure the backend returns an `id` field
-  //         description: newTodoResponse.description,
-  //         added_date: newTodoResponse.added_date,
-  //         due_date: newTodoResponse.due_date || "", // Ensure an empty string if `due_date` is null
-  //         status: newTodoResponse.status, // Adjust to "completed" or "pending"
-  //         priority: newTodoResponse.priority,
-  //       };
-
-  //       // Update the appropriate state list
-  //       if (newTodo.status === "pending") {
-  //         setPendingTodos((prev) => [...prev, newTodo]);
-  //       } else {
-  //         setCompletedTodos((prev) => [...prev, newTodo]);
-  //       }
-
-  //       // Optionally clear the form fields
-  //       setDescription("");
-  //       setDate("");
-  //       setPriority("low");
-
-  //       showToast("Todo created successfully!", "success");
-  //     } else {
-  //       showToast("Failed to create todo.", "error");
-  //     }
-  //   } catch (error) {
-  //     showToast(
-  //       "Error creating todo: " + (error.response?.data.error || error.message),
-  //       "error"
-  //     );
-  //   }
-  // };
-
   const handleSubmit = async (values: {
     description: string;
     date: string;
@@ -321,7 +219,7 @@ export default function TodolistContainer({
       );
 
       if (response.status === 201) {
-        const newTodoResponse = response.data; // Ensure your API returns the newly created todo
+        const newTodoResponse = response.data; // Ensure API returns the newly created todo
 
         // Convert backend response to match the frontend Todo type
         const newTodo: Todo = {
@@ -405,38 +303,6 @@ export default function TodolistContainer({
     sortCriterion
   );
 
-  // const handleTodoEdit = (
-  //   todoId: string,
-  //   newDescription: string,
-  //   newStatus: string
-  // ) => {
-  //   // If the new status is "pending," update the pendingTodos list
-  //   if (newStatus === "pending") {
-  //     // Remove the todo from the completed list if it was completed
-  //     setCompletedTodos((todos) => todos.filter((todo) => todo.id !== todoId));
-
-  //     // Add or update the todo in the pendingTodos list
-  //     setPendingTodos((todos) =>
-  //       todos.map((todo) =>
-  //         todo.id === todoId
-  //           ? { ...todo, description: newDescription, status: newStatus }
-  //           : todo
-  //       )
-  //     );
-  //   } else {
-  //     // Remove the todo from the pending list if it was pending
-  //     setPendingTodos((todos) => todos.filter((todo) => todo.id !== todoId));
-
-  //     // Add or update the todo in the completedTodos list
-  //     setCompletedTodos((todos) =>
-  //       todos.map((todo) =>
-  //         todo.id === todoId
-  //           ? { ...todo, description: newDescription, status: newStatus }
-  //           : todo
-  //       )
-  //     );
-  //   }
-  // };
   const handleTodoEdit = (
     todoId: string,
     newDescription: string,
@@ -503,11 +369,6 @@ export default function TodolistContainer({
     },
     validationSchema,
     onSubmit: handleSubmit,
-    // validationSchema: Yup.object({
-    //   description: Yup.string().required('Description is required'),
-    //   date: Yup.string().required('Date is required'),
-    //   priority: Yup.string().required('Priority is required'),
-    // }),
   });
 
   return (
@@ -524,10 +385,8 @@ export default function TodolistContainer({
           }}
         >
           <Navbar username={username || username_url} />
-          {/* <img src={`data:image/jpeg;base64,${dualipa}`} /> */}
           <Box
             component="form"
-            // onSubmit={handleSubmit}
             onSubmit={formik.handleSubmit}
             sx={{
               bgcolor: "white",
@@ -552,7 +411,6 @@ export default function TodolistContainer({
               error={
                 formik.touched.description && Boolean(formik.errors.description)
               }
-              // onChange={(e) => setDescription(e.target.value)}
               onChange={formik.handleChange}
               helperText={
                 formik.touched.description && formik.errors.description
@@ -565,9 +423,7 @@ export default function TodolistContainer({
               type="date"
               name="date"
               InputLabelProps={{ shrink: true }}
-              // value={date}
               value={formik.values.date}
-              // onChange={(e) => setDate(e.target.value)}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               error={formik.touched.date && Boolean(formik.errors.date)}
@@ -582,9 +438,7 @@ export default function TodolistContainer({
               id="priority"
               name="priority"
               variant="outlined"
-              // value={priority}
               value={formik.values.priority}
-              // onChange={(e) => setPriority(e.target.value as string)}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               error={formik.touched.priority && Boolean(formik.errors.priority)}
@@ -665,20 +519,6 @@ export default function TodolistContainer({
               activeFilter={activeFilter}
               onFilterChange={handleFilterChange}
             />
-            {/* {(activeFilter ? completedTodos : pendingTodos).map((todo) => (
-              <TodoStrip
-                key={todo.id}
-                description={todo.description}
-                priority={todo.priority}
-                status={todo.status}
-                dueDate={todo.due_date}
-                todoId={todo.id}
-                onDelete={() => {}}
-                onEdit={() => {}}
-                onToggleStatus={handleStatusToggle}
-                showToast={showToast}
-              />
-            ))} */}
             {sortedTodos.map((todo) => (
               <TodoStrip
                 key={todo.id}

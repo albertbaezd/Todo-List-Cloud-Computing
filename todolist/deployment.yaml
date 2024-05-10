@@ -14,17 +14,17 @@ spec:
     spec:
       containers:
         - name: my-container
-          image: djninjatv/todolist:v1.6 # V1.6 first deployment of react
+          image: djninjatv/todolist:v1.7 # V1.7 first deployment of react
           ports:
             - containerPort: 80
           env:
-            - name: API_URL
+            - name: API_URL # Api URL for debugging purposes
               value: "34.123.254.209"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: todolist-service # Redundant
+  name: todolist-service
 spec:
   type: LoadBalancer
   ports:

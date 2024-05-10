@@ -10,7 +10,7 @@ import {
   Link,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import logoSrc from "../todo-logo-transparent.png"; // Adjust the path as needed
+import logoSrc from "../todo-logo-transparent.png";
 
 interface NavbarProps {
   username: string;
