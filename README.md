@@ -1,2 +1,6 @@
-# HW4-Cloud-Computing
-Cloud Computing HW4 - Deployment of todoapp to Docker, using Kubernetes. Also modifying the frontend to use queries.
+# Cloud Computing Final Project - Fordham University
+Deployment of todoapp to Docker, using Kubernetes.
+
+Has mobile first frontend application which support for CRUD and other features via a backend engine using Flask.
+
+
